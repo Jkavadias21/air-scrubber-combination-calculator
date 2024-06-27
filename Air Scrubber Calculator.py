@@ -36,13 +36,14 @@ def findCloseCombos(scrubberCombos, cfmTarget, original):
     finalArray = []
     toRemove = []
     list = scrubberCombos.copy()
+    i = 1
     
     #removes combo from original array that have a cfm sum equal to the target cfm
     for scrubberCombo in scrubberCombos:
         if sum(scrubberCombo) == cfmTarget:
             finalArray.append(scrubberCombo)
             toRemove.append(scrubberCombo)
-        if cfmTarget - sum(scrubberCombo) >= 3:
+        if cfmTarget - sum(scrubberCombo) >= max(original):
             toRemove.append(scrubberCombo)
 
     for items in toRemove:
@@ -50,26 +51,22 @@ def findCloseCombos(scrubberCombos, cfmTarget, original):
     print (scrubberCombos, "-------------")
     for scrubberCombo in scrubberCombos:
         
-        scrubberCombo.append("end")
+        scrubberCombo.append("")
         integers = [x for x in scrubberCombo if isinstance(x, int)]
 
         print("this line", scrubberCombo, integers)
         
         
         for cfm in original:
-            if sum(integers) + cfm > cfmTarget:
+            #print(i, len(original), "length")
+            if (sum(integers) + cfm > cfmTarget) and (i < len(original)):
+                print("first", i, len(original))
+                scrubberCombo[-1] = scrubberCombo[-1] + str(cfm) + ' or '
+            elif (sum(integers) + cfm > cfmTarget):
+                print("second", i, len(original), sum(integers) + cfm, cfmTarget)
                 scrubberCombo[-1] = scrubberCombo[-1] + str(cfm)
-                print(sum(integers) + cfm, cfmTarget, "cfm", )
-                
-                
-                    
-                
-               
-        #print (scrubberCombo, cfm, cfmTarget)
-                    
-        
-            
-            
+            i += 1
+        i = 1
     print(toRemove, "removed") 
     print(list, "list")
     print(original, "og")       
@@ -80,14 +77,13 @@ def findCloseCombos(scrubberCombos, cfmTarget, original):
         
         
 
-scrubbersCfms = [1,2,3]
-original = [1,2,3]
-cfmTarget = 5
+scrubbersCfms = [2,3,4]
+cfmTarget = 7
 scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
 print(scrubberCombos, "original")
-final = findCloseCombos(scrubberCombos, cfmTarget, original)
+final = findCloseCombos(scrubberCombos, cfmTarget, scrubbersCfms)
 #print(print_sums(scrubberCombos))
-
+final = final + scrubberCombos
 print("\n", scrubberCombos, "original")
 print("\n\n", final, "final")
 
