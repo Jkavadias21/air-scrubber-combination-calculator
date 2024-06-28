@@ -11,6 +11,8 @@ class airScrubber:
     def __str__(self):
         return f"({self.scrubberType})"
         
+#------------------------function defs--------------------------------------
+
 #returns list of all combinations of airscrubber that cfms sum to the target cfm or less
 def findScrubberCombos(scrubbersCfms, cfmTar):
     def backtrack(start, path, total):
@@ -73,8 +75,24 @@ def addOverflowScrubber(scrubberCombos, original):
             i += 1
         i = 1 
 
-scrubbersCfms = []
+#convert 2D list of cmf values to list of air scrubber name strings
+def cmfToName2D(arr2D):
+    for i in range(len(arr2D)):
+        for j in range(len(arr2D[i])):
+            for scrubber in scrubbers:
+                if arr2D[i][j] == scrubber.cfmValue:
+                    arr2D[i][j] = scrubber.scrubberType
 
+def nameToCmf1D(arr1D):
+    #convert from name to cmf values(opposite of earlier function)
+        for scrubber in scrubbers:
+            for j in range(len(arr1D)):
+                if scrubber.scrubberType == arr1D[j]:
+                    arr1D[j] = scrubber.cfmValue
+
+#------------------------function defs--------------------------------------^
+
+scrubbersCfms = []
 #list to store all scrubbers the user has at their facility
 scrubbers = [airScrubber("pheonix", 485), airScrubber("xPower", 650), airScrubber("thor", 1000)]
 #list that stores all the users air scrubbers cfm values 
@@ -82,7 +100,7 @@ for scrubber in scrubbers:
     scrubbersCfms.append(scrubber.cfmValue)
 
 
-cfmTarget = 2000
+cfmTarget = 1200
 scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
 
 #-----testing------
@@ -92,18 +110,15 @@ final = filterAirScrubbers(scrubberCombos, cfmTarget, scrubbersCfms)
 addOverflowScrubber(scrubberCombos, scrubbersCfms)
 final = final + scrubberCombos
 
+#-----testing------
 print("final        ", final)
 
-#convert cfm values in combo lists to air scrubber name strings
-for i in range(len(final)):
-    for j in range(len(final[i])):
-        for scrubber in scrubbers:
-            if final[i][j] == scrubber.cfmValue:
-                final[i][j] = scrubber.scrubberType
+cmfToName2D(final)
 final = sorted(final, key=len)
 
-totalValues = []
+
 finalPrintValues = []
+
 for i in range(len(final)):
     total = 0
     split = []
@@ -113,90 +128,65 @@ for i in range(len(final)):
     tempPrintValues = []
     totalList = []
 
-    print(final[i], "final")
+
+    #make split function
     for j in range(len(final[i])):
+        #seperate A1/A2 element into individual componenets [A1,A2]
         if '/' in final[i][-1]:
             finalString = final[i][-1]
             split = finalString.split("/")
             totalList = final[i] + split
+        #if no A1/A2 component then split equals whole combo
         else:
             split = final[i]
             totalList  = split
-        
-        
-        
+        #remove original A1/A2 component from list
         for element in totalList:
             if '/' in element:
                 toRemove.append(element)
-
         for item in toRemove:
             totalList.remove(item)
+        
         toRemove = []
 
-    print(totalList, "total list")
+    #make total function(general calculator as oposed to specific)
+    #calculate cmf sum of a combo including all overflow scrubbers (A1, A2/A3) total = A1+A2+A3
     for scrubber in scrubbers:
         for scrubberName in totalList:
             if scrubberName == scrubber.scrubberType:
                 total = total + scrubber.cfmValue
-    totalValues.append(total)
-
-    print(total, "total--------------")
-    
-    #print(split, "split") 
-
     
     newArray = []
     tempFinal = final[i][:]
-    print(final, "---jhfdgsalkjfsaghlkfdsghfdskjghfdskghfdsgfdslkglkhfdsgfslikjfkhdgfdsafdsajmfdsajh")
-    print(tempFinal)
+    #handle cases with no A1/A2 component
+    #make combo total calculator function(specific calculator)
     if split == final[i]:
-        for scrubber in scrubbers:
-            for j in range(len(tempFinal)):
-                if scrubber.scrubberType == tempFinal[j]:
-                    tempFinal[j] = scrubber.cfmValue
+        nameToCmf1D(tempFinal)
         finalPrintValues.append(sum(tempFinal))
-            
+    #handle cases with A1/A2 component
     else: 
+        #calculate total cmf of each combo within one list as oposed to A1+A2+A3 we have A1+A2 and A1+A3 for [A1, A2/A3] 
         for k in range(len(split)):
-            for scrubber2 in scrubbers:
-                if split[k] == scrubber2.scrubberType:
+            for scrubber in scrubbers:
+                #pick specific cmf value from A1/A2 and calculate total for that combo 
+                #for [A1, A2/A3] seperate into A1 A3 and A1 A2 then calculate totals and add to list for printing later
+                if split[k] == scrubber.scrubberType:
                     newArray = split[:k] + split[k + 1:]
                     for z in range(len(newArray)):
-                        for scrubber2 in scrubbers:
-                            if newArray[z] == scrubber2.scrubberType:
-                                newArray[z] = scrubber2.cfmValue
+                        for scrubber in scrubbers:
+                            if newArray[z] == scrubber.scrubberType:
+                                newArray[z] = scrubber.cfmValue
                     tempPrintValues.append(total - sum(newArray))
-                    print(split, split[k], newArray, "split----------", tempPrintValues, k, len(split))
+                    #print(split, split[k], newArray, "split----------", tempPrintValues, k, len(split))
                     if k == len(split) - 1:
-                        print("here")
                         finalPrintValues.append(tempPrintValues)
 
-
-                
-            #print(newArray, "new 2")
-            
-            
-            
-            #print(newArray, "new")
-            
-            #print(printValues, "--print values")
-                
-
-            
-
-        
         sumList = []
-        
         total = 0
-        #print(totalList, "total list")
-        #print(totalValues, "----------------------------------------------")
-    
 
-
-
-
+#display combos and cmf totals
 i = 0
-
+print("\n -----FINAL OUTPUT-----")
 for combo in final:
     if isinstance(finalPrintValues[i], int):
         print(combo, f"[{finalPrintValues[i]}]")
