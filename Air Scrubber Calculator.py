@@ -82,7 +82,7 @@ for scrubber in scrubbers:
     scrubbersCfms.append(scrubber.cfmValue)
 
 
-cfmTarget = 1000
+cfmTarget = 2000
 scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
 
 #-----testing------
@@ -102,7 +102,112 @@ for i in range(len(final)):
                 final[i][j] = scrubber.scrubberType
 final = sorted(final, key=len)
 
-#-----testing------
+totalValues = []
+finalPrintValues = []
+for i in range(len(final)):
+    total = 0
+    split = []
+    finalString = []
+    toRemove = []
+    sumList = []
+    tempPrintValues = []
+    totalList = []
+
+    print(final[i], "final")
+    for j in range(len(final[i])):
+        if '/' in final[i][-1]:
+            finalString = final[i][-1]
+            split = finalString.split("/")
+            totalList = final[i] + split
+        else:
+            split = final[i]
+            totalList  = split
+        
+        
+        
+        for element in totalList:
+            if '/' in element:
+                toRemove.append(element)
+
+        for item in toRemove:
+            totalList.remove(item)
+        toRemove = []
+
+    print(totalList, "total list")
+    for scrubber in scrubbers:
+        for scrubberName in totalList:
+            if scrubberName == scrubber.scrubberType:
+                total = total + scrubber.cfmValue
+    totalValues.append(total)
+
+    print(total, "total--------------")
+    
+    #print(split, "split") 
+
+    
+    newArray = []
+    tempFinal = final[i][:]
+    print(final, "---jhfdgsalkjfsaghlkfdsghfdskjghfdskghfdsgfdslkglkhfdsgfslikjfkhdgfdsafdsajmfdsajh")
+    print(tempFinal)
+    if split == final[i]:
+        for scrubber in scrubbers:
+            for j in range(len(tempFinal)):
+                if scrubber.scrubberType == tempFinal[j]:
+                    tempFinal[j] = scrubber.cfmValue
+        finalPrintValues.append(sum(tempFinal))
+            
+    else: 
+        for k in range(len(split)):
+            for scrubber2 in scrubbers:
+                if split[k] == scrubber2.scrubberType:
+                    newArray = split[:k] + split[k + 1:]
+                    for z in range(len(newArray)):
+                        for scrubber2 in scrubbers:
+                            if newArray[z] == scrubber2.scrubberType:
+                                newArray[z] = scrubber2.cfmValue
+                    tempPrintValues.append(total - sum(newArray))
+                    print(split, split[k], newArray, "split----------", tempPrintValues, k, len(split))
+                    if k == len(split) - 1:
+                        print("here")
+                        finalPrintValues.append(tempPrintValues)
+
+
+                
+            #print(newArray, "new 2")
+            
+            
+            
+            #print(newArray, "new")
+            
+            #print(printValues, "--print values")
+                
+
+            
+
+        
+        sumList = []
+        
+        total = 0
+        #print(totalList, "total list")
+        #print(totalValues, "----------------------------------------------")
+    
+
+
+
+
+i = 0
+
 for combo in final:
-    print(combo)
+    if isinstance(finalPrintValues[i], int):
+        print(combo, f"[{finalPrintValues[i]}]")
+        i += 1
+    else:
+        print(combo, finalPrintValues[i])
+        i += 1
+    
+    
+
+#make function that converts all combos into digits
+
+    
 
