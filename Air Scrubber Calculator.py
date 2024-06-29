@@ -52,7 +52,7 @@ def filterAirScrubbers(scrubberCombos, cfmTarget, original):
     return finalArray
 
 #encode overflow scrubbers into combos
-def addOverflowScrubber(scrubberCombos, original):
+def addOverflowScrubber(scrubberCombos, original, scrubbers, cfmTarget):
     i = 1
     for scrubberCombo in scrubberCombos:
         scrubberCombo.append("")
@@ -72,7 +72,7 @@ def addOverflowScrubber(scrubberCombos, original):
         i = 1 
 
 #convert 2D list of cmf values to list of air scrubber name strings
-def cmfToName2D(arr2D):
+def cmfToName2D(arr2D, scrubbers):
     for i in range(len(arr2D)):
         for j in range(len(arr2D[i])):
             for scrubber in scrubbers:
@@ -80,14 +80,14 @@ def cmfToName2D(arr2D):
                     arr2D[i][j] = scrubber.scrubberType
 
 #convert list from name to cmf values
-def nameToCmf1D(arr1D):
+def nameToCmf1D(arr1D, scrubbers):
         for scrubber in scrubbers:
             for j in range(len(arr1D)):
                 if scrubber.scrubberType == arr1D[j]:
                     arr1D[j] = scrubber.cfmValue
 
 #seperate A1/A2 element into individual componenets [A1,A2] and organise lists
-def splitOrString(comboList, finalString, split, totalList, index):
+def splitOrString(comboList, finalString, split, totalList, index, final):
     toRemove = []
 
     if '/' in comboList[index][-1]:
@@ -110,7 +110,7 @@ def splitOrString(comboList, finalString, split, totalList, index):
     return finalString, split, totalList
 
 #sum all cmf values (for [A1, A2/A3] sumAllCmfs returns A1+A2+A3)
-def sumAllCmfs(totalList):
+def sumAllCmfs(totalList, scrubbers):
     total = 0
     #make total function(general calculator as oposed to specific)
     #calculate cmf sum of a combo including all overflow scrubbers (A1, A2/A3) total = A1+A2+A3
@@ -121,9 +121,9 @@ def sumAllCmfs(totalList):
     return total
 
 #calculate the sum for each combination
-def sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, index):
+def sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, index, final, scrubbers):
     if split == final[index]:
-                nameToCmf1D(tempFinal)
+                nameToCmf1D(tempFinal, scrubbers)
                 finalPrintValues.append(sum(tempFinal))
             #handle cases with A1/A2 component
     else: 
@@ -144,18 +144,18 @@ def sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, 
                         finalPrintValues.append(tempPrintValues)
 
 #find sums of cfms for each combo to output
-def getCmfSums(finalPrintValues):
+def getCmfSums(finalPrintValues, final, scrubbers):
     for i in range(len(final)):
         split = []
         finalString = []
         tempPrintValues = []
         totalList = []
         
-        finalString, split, totalList = splitOrString(final, finalString, split, totalList, i)
+        finalString, split, totalList = splitOrString(final, finalString, split, totalList, i, final)
         print(finalString, split, totalList)
-        total = sumAllCmfs(totalList)
+        total = sumAllCmfs(totalList, scrubbers)
         tempFinal = final[i][:]
-        sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, i)
+        sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, i, final, scrubbers)
 
 def main():
     scrubbersCfms = []
@@ -166,16 +166,33 @@ def main():
     for scrubber in scrubbers:
         scrubbersCfms.append(scrubber.cfmValue)
 
-    cfmTarget = 1200
+    units = input("Enter m for meters or f for feet: ")
+    roomLength = float(input("Enter room length: "))
+    roomWidth = float(input("Enter room width: "))
+    roomHeight = float(input("Enter room height: "))
+    airChanges = float(input("Enter required air changes: "))
+
+    if units == "m":
+        roomLength = roomLength*3.28084
+        roomWidth = roomWidth*3.28084
+        roomHeight = roomHeight*3.28084
+
+    roomVolume = roomLength*roomWidth*roomHeight
+    #calculate total volume that needs to be filtered per hour
+    totalVolume = roomVolume*float(airChanges)
+
+    #calculate required cfm to meet air changes requirement
+    cfmTarget = totalVolume/60
+
     scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
     final = filterAirScrubbers(scrubberCombos, cfmTarget, scrubbersCfms)
-    addOverflowScrubber(scrubberCombos, scrubbersCfms)
+    addOverflowScrubber(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
     final = final + scrubberCombos
-    cmfToName2D(final)
+    cmfToName2D(final, scrubbers)
     #sort output from least elements to most elements
     final = sorted(final, key=len)
     finalPrintValues = []
-    getCmfSums(finalPrintValues)
+    getCmfSums(finalPrintValues, final, scrubbers)
 
     #display combos and cmf totals
     i = 0
@@ -187,7 +204,7 @@ def main():
         else:
             print(combo, finalPrintValues[i])
             i += 1
-
+    print(units, roomLength,roomHeight,roomWidth, roomVolume, totalVolume, airChanges, cfmTarget)
 #------------------------function defs--------------------------------------^
 
 if __name__ == "__main__":
