@@ -155,7 +155,85 @@ def getCmfSums(finalPrintValues, final, scrubbers):
         tempFinal = final[i][:]
         sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, i, final, scrubbers)
 
+#check if a value is a number or not
+def isNumber(s):
+    try:
+        float(s)
+        #return true if value is a number
+        return True
+    except ValueError:
+        #return false if value is not a number
+        return False
+    
+#check if a value is an int or not
+def isInt(s):
+    try:
+        int(s)
+        #return true if value is an int
+        return True
+    except ValueError:
+        #return false if value is not an int
+        return False
+    
+#function to get a valid input from user
+def getValidInput(prompt, isInt = False):
+    while True:
+        try:
+            value = input(prompt)
+            if isInt:
+                value = int(value)
+            else:
+                value = float(value)
+            return value
+        
+        except ValueError:
+            if isInt:
+                print("Invalid input. Please enter a valid integer.")
+            else:
+                print("Invalid input. Please enter a valid number.")
+
+#assign validated inputs to respective variables
+def getInputs():
+    #check and assign valid user unit inputs
+    while True:
+        units = input("Enter m for meters or f for feet: ").lower()
+        if units == 'm' or units == 'f':
+            print("valid")
+            break
+        else:
+            print("invalid")
+    
+    while True:
+        try:
+            roomLength = getValidInput("Enter the length: ")
+            roomWidth = getValidInput("Enter the width: ")
+            roomHeight = getValidInput("Enter the height: ")
+            airChanges = getValidInput("Enter the count:", isInt)
+            print(f"Length: {roomLength}, Width: {roomWidth}, Height: {roomHeight}, Air Changes: {airChanges}")
+            break  # Exit the loop if all inputs are valid
+        except ValueError:
+            print("Invalid input. Please enter valid numbers.")
+
+    return units, roomLength, roomWidth, roomHeight, airChanges 
+    
+def meterToFeet(roomLength, roomWidth, roomHeight, units):
+    #convert from meters to feet
+    if units == "m":
+        roomLength = roomLength*3.28084
+        roomWidth = roomWidth*3.28084
+        roomHeight = roomHeight*3.28084
+    return roomLength, roomWidth, roomHeight
+
+#calculate the required cfm for desired air changes
+def calculateTargetCfm(roomLength, roomWidth, roomHeight, airChanges):
+    #calculate volumes
+    roomVolume = roomLength*roomWidth*roomHeight
+    totalVolume = roomVolume*float(airChanges)
+    #return target cfm
+    return totalVolume/60
+
 def main():
+    finalPrintValues = []
     scrubbersCfms = []
     #list to store all scrubbers the user has at their facility
     scrubbers = [airScrubber("pheonix", 485), airScrubber("xPower", 650), airScrubber("thor", 1000)]
@@ -164,25 +242,11 @@ def main():
     for scrubber in scrubbers:
         scrubbersCfms.append(scrubber.cfmValue)
 
-    #read in user inputs
-    units = input("Enter m for meters or f for feet: ")
-    roomLength = float(input("Enter room length: "))
-    roomWidth = float(input("Enter room width: "))
-    roomHeight = float(input("Enter room height: "))
-    airChanges = float(input("Enter required air changes: "))
-
-    #convert from meters to feet
-    if units == "m":
-        roomLength = roomLength*3.28084
-        roomWidth = roomWidth*3.28084
-        roomHeight = roomHeight*3.28084
-
-    #calculate volumes
-    roomVolume = roomLength*roomWidth*roomHeight
-    totalVolume = roomVolume*float(airChanges)
-
-    #calculate required cfm to meet air changes requirement
-    cfmTarget = totalVolume/60
+    units, roomLength, roomWidth, roomHeight, airChanges = getInputs()
+    
+    roomLength, roomWidth, roomHeight = meterToFeet(roomLength, roomWidth, roomHeight, units)
+    
+    cfmTarget = calculateTargetCfm(roomLength, roomWidth, roomHeight, airChanges)
 
     #perform combination finding, cfm total calculations and combination filtering
     scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
@@ -190,9 +254,10 @@ def main():
     addOverflowScrubber(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
     final = final + scrubberCombos
     cmfToName2D(final, scrubbers)
+    
     #sort output from least elements to most elements
     final = sorted(final, key=len)
-    finalPrintValues = []
+    
     getCmfSums(finalPrintValues, final, scrubbers)
 
     #output air scrubber combinations and cmf total
@@ -205,7 +270,7 @@ def main():
         else:
             print(combo, finalPrintValues[i])
             i += 1
-    print(units, roomLength,roomHeight,roomWidth, roomVolume, totalVolume, airChanges, cfmTarget)
+    print(f"Length: {roomLength}, Width: {roomWidth}, Height: {roomHeight}, Air Changes: {airChanges}, Units: {units}, CFM: {cfmTarget}")
 #------------------------function defs--------------------------------------^
 
 if __name__ == "__main__":
@@ -213,10 +278,10 @@ if __name__ == "__main__":
     
 
 
+#to-do
+#add dynamic air scrubber adding from user
 
-
-#mak
-#make function that converts all combos into digits
+#testing
 #print("final        ", final)
 #print( "original     ", scrubberCombos)
 #print("removed      ", toRemove)
