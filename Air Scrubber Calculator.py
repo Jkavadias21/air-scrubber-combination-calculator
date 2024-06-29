@@ -112,8 +112,6 @@ def splitOrString(comboList, finalString, split, totalList, index, final):
 #sum all cmf values (for [A1, A2/A3] sumAllCmfs returns A1+A2+A3)
 def sumAllCmfs(totalList, scrubbers):
     total = 0
-    #make total function(general calculator as oposed to specific)
-    #calculate cmf sum of a combo including all overflow scrubbers (A1, A2/A3) total = A1+A2+A3
     for scrubber in scrubbers:
         for scrubberName in totalList:
             if scrubberName == scrubber.scrubberType:
@@ -122,10 +120,11 @@ def sumAllCmfs(totalList, scrubbers):
 
 #calculate the sum for each combination
 def sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, index, final, scrubbers):
+    #handle cases without A1/A2 components
     if split == final[index]:
                 nameToCmf1D(tempFinal, scrubbers)
                 finalPrintValues.append(sum(tempFinal))
-            #handle cases with A1/A2 component
+    #handle cases with A1/A2 component
     else: 
         #calculate total cmf of each combo within one list as oposed to A1+A2+A3 we have A1+A2 and A1+A3 for [A1, A2/A3] 
         for k in range(len(split)):
@@ -152,7 +151,6 @@ def getCmfSums(finalPrintValues, final, scrubbers):
         totalList = []
         
         finalString, split, totalList = splitOrString(final, finalString, split, totalList, i, final)
-        print(finalString, split, totalList)
         total = sumAllCmfs(totalList, scrubbers)
         tempFinal = final[i][:]
         sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, i, final, scrubbers)
@@ -166,24 +164,27 @@ def main():
     for scrubber in scrubbers:
         scrubbersCfms.append(scrubber.cfmValue)
 
+    #read in user inputs
     units = input("Enter m for meters or f for feet: ")
     roomLength = float(input("Enter room length: "))
     roomWidth = float(input("Enter room width: "))
     roomHeight = float(input("Enter room height: "))
     airChanges = float(input("Enter required air changes: "))
 
+    #convert from meters to feet
     if units == "m":
         roomLength = roomLength*3.28084
         roomWidth = roomWidth*3.28084
         roomHeight = roomHeight*3.28084
 
+    #calculate volumes
     roomVolume = roomLength*roomWidth*roomHeight
-    #calculate total volume that needs to be filtered per hour
     totalVolume = roomVolume*float(airChanges)
 
     #calculate required cfm to meet air changes requirement
     cfmTarget = totalVolume/60
 
+    #perform combination finding, cfm total calculations and combination filtering
     scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
     final = filterAirScrubbers(scrubberCombos, cfmTarget, scrubbersCfms)
     addOverflowScrubber(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
@@ -194,7 +195,7 @@ def main():
     finalPrintValues = []
     getCmfSums(finalPrintValues, final, scrubbers)
 
-    #display combos and cmf totals
+    #output air scrubber combinations and cmf total
     i = 0
     print("\n -----FINAL OUTPUT-----")
     for combo in final:
@@ -214,6 +215,7 @@ if __name__ == "__main__":
 
 
 
+#mak
 #make function that converts all combos into digits
 #print("final        ", final)
 #print( "original     ", scrubberCombos)
