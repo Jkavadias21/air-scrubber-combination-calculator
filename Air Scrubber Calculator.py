@@ -205,10 +205,10 @@ def getInputs():
     
     while True:
         try:
-            roomLength = getValidInput("Enter the length: ")
-            roomWidth = getValidInput("Enter the width: ")
-            roomHeight = getValidInput("Enter the height: ")
-            airChanges = getValidInput("Enter the count:", isInt)
+            roomLength = getValidInput("Enter room length: ")
+            roomWidth = getValidInput("Enter room width: ")
+            roomHeight = getValidInput("Enter room height: ")
+            airChanges = getValidInput("Enter required air changes:", isInt)
             print(f"Length: {roomLength}, Width: {roomWidth}, Height: {roomHeight}, Air Changes: {airChanges}")
             break  # Exit the loop if all inputs are valid
         except ValueError:
@@ -216,8 +216,8 @@ def getInputs():
 
     return units, roomLength, roomWidth, roomHeight, airChanges 
     
+#convert dimensions from meters to feet
 def meterToFeet(roomLength, roomWidth, roomHeight, units):
-    #convert from meters to feet
     if units == "m":
         roomLength = roomLength*3.28084
         roomWidth = roomWidth*3.28084
