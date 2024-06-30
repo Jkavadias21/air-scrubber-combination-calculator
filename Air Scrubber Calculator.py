@@ -1,3 +1,5 @@
+from collections import Counter
+
 class airScrubber:
     # Constructor method (initializer)
     def __init__(self, scrubberType, cfmValue):
@@ -10,7 +12,6 @@ class airScrubber:
 
     def __str__(self):
         return f"({self.scrubberType})"
-
 
 #------------------------function defs--------------------------------------
 #returns list of all combinations of airscrubber that cfms sum to the target cfm or less
@@ -25,6 +26,7 @@ def findScrubberCombos(scrubbersCfms, cfmTar):
     result = []
     scrubbersCfms.sort()  # Ensure scrubbersCfms is sorted
     backtrack(0, [], 0)
+    print(result, "-----------------------------------------------------")
     return result
 
 #filter out undesired combos
@@ -86,11 +88,17 @@ def nameToCmf1D(arr1D, scrubbers):
                 if scrubber.scrubberType == arr1D[j]:
                     arr1D[j] = scrubber.cfmValue
 
+def containsSlash(string):
+    if '/' in string:
+        return True
+    else:
+        return False
+
 #seperate A1/A2 element into individual componenets [A1,A2] and organise lists
 def splitOrString(comboList, finalString, split, totalList, index, final):
     toRemove = []
 
-    if '/' in comboList[index][-1]:
+    if containsSlash(comboList[index][-1]):
         finalString = comboList[index][-1]
         split = finalString.split("/")
         totalList = comboList[index] + split
@@ -153,6 +161,7 @@ def getCmfSums(finalPrintValues, final, scrubbers):
         finalString, split, totalList = splitOrString(final, finalString, split, totalList, i, final)
         total = sumAllCmfs(totalList, scrubbers)
         tempFinal = final[i][:]
+        print(tempFinal, "-------temp--------")
         sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, i, final, scrubbers)
 
 #check if a value is a number or not
@@ -198,10 +207,10 @@ def getInputs():
     while True:
         units = input("Enter m for meters or f for feet: ").lower()
         if units == 'm' or units == 'f':
-            print("valid")
             break
-        else:
-            print("invalid")
+        elif units == 's':
+            return units, 50, 50, 20, 1
+        
     
     while True:
         try:
@@ -256,21 +265,45 @@ def main():
     cmfToName2D(final, scrubbers)
     
     #sort output from least elements to most elements
-    final = sorted(final, key=len)
+    #final = sorted(final, key=len)
     
     getCmfSums(finalPrintValues, final, scrubbers)
 
     #output air scrubber combinations and cmf total
     i = 0
     print("\n -----FINAL OUTPUT-----")
+    #print(f"Length: {roomLength}, Width: {roomWidth}, Height: {roomHeight}, Air Changes: {airChanges}, Units: {units}, CFM: {cfmTarget}")
+    finalList = []
+    
+    #show quantity of airscrubber in output([as1, as1] -> [2 as1])
     for combo in final:
+        counts = Counter(combo)
+        result = []
+        for scrubber in combo:
+            if containsSlash(scrubber):
+                result.append(scrubber)
+            else:
+                if counts[scrubber] > 0:
+                    result.append(f"{counts[scrubber]} {scrubber}")
+                    counts[scrubber] = 0  # Ensure we only add the formatted string once for each unique scrubber
+        finalList.append(result)
+
+    print("\n" + f"To maintain {airChanges} airchanges an hour, a total cmf of {cfmTarget:.{5}}({cfmTarget*0.000471947:.{3}}m3/s) is required" + "\n")
+    
+    for combo in finalList:
         if isinstance(finalPrintValues[i], int):
             print(combo, f"[{finalPrintValues[i]}]")
             i += 1
         else:
             print(combo, finalPrintValues[i])
             i += 1
-    print(f"Length: {roomLength}, Width: {roomWidth}, Height: {roomHeight}, Air Changes: {airChanges}, Units: {units}, CFM: {cfmTarget}")
+
+                
+            
+    
+        
+
+    
 #------------------------function defs--------------------------------------^
 
 if __name__ == "__main__":
@@ -280,6 +313,14 @@ if __name__ == "__main__":
 
 #to-do
 #add dynamic air scrubber adding from user
+#add m^3/s 
+#add target cfm and cms to output
+#remove magic numbers
+#instead of printing [a,b,b,b, a/b] print [a, 2*b]
+#remove extra element at the start 
+#remove duplicates could have an option to represent as is, or seperate all into seperate lists, then remove duplicates and sort by price
+#sort by each as type so group all xpower 1 xpower 2 xpower 3 xpower will be listed based on price then in a different column do other as
+#could have search function to verify combination is valid
 
 #testing
 #print("final        ", final)
