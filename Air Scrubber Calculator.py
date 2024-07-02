@@ -73,6 +73,21 @@ def addOverflowScrubber(scrubberCombos, original, scrubbers, cfmTarget):
             i += 1
         i = 1 
 
+#add overflow scrubbers for the output of every single combination ([a1,a1],[a1,a2] instead of [a1, a1/a2])
+def addOverFlowAll(scrubberCombos, original, scrubbers, cfmTarget):
+    finalAll = []
+    print(scrubberCombos, "combos")
+    for combo in scrubberCombos:
+        for scrubber in scrubbers:
+            print(scrubber.cfmValue, combo, cfmTarget, "-------------------------")
+            if(sum(combo) + scrubber.cfmValue > cfmTarget):
+                overflowedCombo = combo + [scrubber.cfmValue]
+                finalAll.append(overflowedCombo)
+                
+                
+    print(finalAll, "test final")
+    return finalAll
+
 #convert 2D list of cmf values to list of air scrubber name strings
 def cmfToName2D(arr2D, scrubbers):
     for i in range(len(arr2D)):
@@ -241,6 +256,18 @@ def calculateTargetCfm(roomLength, roomWidth, roomHeight, airChanges):
     #return target cfm
     return totalVolume/60
 
+def removeDuplicates(comboAll):
+    seen = set()
+    uniqueArrays = []
+
+    for combo in comboAll:
+        sortedTuple = tuple(sorted(combo))  # Sort the array and convert to tuple
+        if sortedTuple not in seen:
+            seen.add(sortedTuple)  # Add the tuple to the set
+            uniqueArrays.append(combo)  # Add the original array to the result
+
+    return uniqueArrays
+
 def main():
     finalPrintValues = []
     scrubbersCfms = []
@@ -260,8 +287,12 @@ def main():
     #perform combination finding, cfm total calculations and combination filtering
     scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
     final = filterAirScrubbers(scrubberCombos, cfmTarget, scrubbersCfms)
+    finalAll = final + addOverFlowAll(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
+    #final originally is all combos who exactly equal the goal
     addOverflowScrubber(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
+    #final below is all combos
     final = final + scrubberCombos
+    print(final)
     cmfToName2D(final, scrubbers)
     
     #sort output from least elements to most elements
@@ -297,6 +328,12 @@ def main():
         else:
             print(combo, finalPrintValues[i])
             i += 1
+
+    #print every single combination
+    cmfToName2D(finalAll, scrubbers)
+    finalAll = removeDuplicates(finalAll)
+    for comboAll in finalAll:
+        print(comboAll)
 
                 
             
