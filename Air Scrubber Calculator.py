@@ -1,14 +1,18 @@
 from collections import Counter
 
 class airScrubber:
-    # Constructor method (initializer)
+
+    amount = 0
+    
     def __init__(self, scrubberType, cfmValue):
         self.scrubberType = scrubberType
         self.cfmValue = cfmValue
         
-
     def setFlag(self, flag):
         self.flag = flag
+
+    def setAmount(self, amount):
+        self.amount = int(amount)
 
     def __str__(self):
         return f"({self.scrubberType})"
@@ -26,7 +30,6 @@ def findScrubberCombos(scrubbersCfms, cfmTar):
     result = []
     scrubbersCfms.sort()  # Ensure scrubbersCfms is sorted
     backtrack(0, [], 0)
-    print(result, "-----------------------------------------------------")
     return result
 
 #filter out undesired combos
@@ -75,18 +78,13 @@ def addOverflowScrubber(scrubberCombos, original, scrubbers, cfmTarget):
 
 #add overflow scrubbers for the output of every single combination ([a1,a1],[a1,a2] instead of [a1, a1/a2])
 def addOverFlowAll(scrubberCombos, original, scrubbers, cfmTarget):
-    finalAll = []
-    print(scrubberCombos, "combos")
+    allCombos = []
     for combo in scrubberCombos:
         for scrubber in scrubbers:
-            print(scrubber.cfmValue, combo, cfmTarget, "-------------------------")
             if(sum(combo) + scrubber.cfmValue > cfmTarget):
                 overflowedCombo = combo + [scrubber.cfmValue]
-                finalAll.append(overflowedCombo)
-                
-                
-    print(finalAll, "test final")
-    return finalAll
+                allCombos.append(overflowedCombo)
+    return allCombos
 
 #convert 2D list of cmf values to list of air scrubber name strings
 def cmfToName2D(arr2D, scrubbers):
@@ -176,7 +174,6 @@ def getCmfSums(finalPrintValues, final, scrubbers):
         finalString, split, totalList = splitOrString(final, finalString, split, totalList, i, final)
         total = sumAllCmfs(totalList, scrubbers)
         tempFinal = final[i][:]
-        print(tempFinal, "-------temp--------")
         sumRequiredCmfs(split, tempFinal, tempPrintValues, total, finalPrintValues, i, final, scrubbers)
 
 #check if a value is a number or not
@@ -268,11 +265,52 @@ def removeDuplicates(comboAll):
 
     return uniqueArrays
 
+#create an array only containing combinations that a valid for the users stock
+def removeCombos(allCombos, scrubbers):
+    scrubberDict = {}
+    validCombos = []
+
+    for scrubber in scrubbers:
+        scrubberDict[scrubber.scrubberType] = 0
+
+    for combo in allCombos:
+        for asType in combo:
+            for scrubber in scrubbers:
+                if scrubber.scrubberType == asType:
+                    scrubberDict[scrubber.scrubberType] += 1
+        print(combo, scrubberDict.items(), "here")
+        
+        valid = True
+        for scrubber in scrubbers:
+            if scrubberDict[scrubber.scrubberType] > scrubber.amount:
+                valid = False
+                break
+        if valid:
+            validCombos.append(combo)
+            
+        for scrubber in scrubbers:
+            scrubberDict[scrubber.scrubberType] = 0
+    print(validCombos)
+    return validCombos
+        
+                    
+
+                
+
+
 def main():
     finalPrintValues = []
     scrubbersCfms = []
     #list to store all scrubbers the user has at their facility
     scrubbers = [airScrubber("pheonix", 485), airScrubber("xPower", 650), airScrubber("thor", 1000)]
+    
+    #allows user to input amount of each air scrubber they have independant of scrubber array population
+    asAmt = []
+    for scrubber in scrubbers:
+        scrubber.setAmount(input(f"enter amount of {scrubber.scrubberType} "))
+    for scrubber in scrubbers:
+        print(scrubber.amount)
+
 
     #list that stores all the users air scrubbers cfm values 
     for scrubber in scrubbers:
@@ -287,7 +325,7 @@ def main():
     #perform combination finding, cfm total calculations and combination filtering
     scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
     final = filterAirScrubbers(scrubberCombos, cfmTarget, scrubbersCfms)
-    finalAll = final + addOverFlowAll(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
+    allCombos = final + addOverFlowAll(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
     #final originally is all combos who exactly equal the goal
     addOverflowScrubber(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
     #final below is all combos
@@ -329,11 +367,17 @@ def main():
             print(combo, finalPrintValues[i])
             i += 1
 
+    print("\n ALL COMBOS")
+    
     #print every single combination
-    cmfToName2D(finalAll, scrubbers)
-    finalAll = removeDuplicates(finalAll)
-    for comboAll in finalAll:
-        print(comboAll)
+    cmfToName2D(allCombos, scrubbers)
+    print(allCombos)
+    
+
+    allCombos = removeDuplicates(allCombos)
+    validCombos = removeCombos(allCombos, scrubbers)
+    for valid in validCombos:
+        print(valid, "here")
 
                 
             
@@ -364,3 +408,5 @@ if __name__ == "__main__":
 #print( "original     ", scrubberCombos)
 #print("removed      ", toRemove)
 #print("after removal", scrubberCombos)
+
+#add quantities for all
