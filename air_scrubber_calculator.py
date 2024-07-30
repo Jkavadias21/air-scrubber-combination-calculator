@@ -1,4 +1,3 @@
-from collections import Counter
 from air_scrubber_functions import *
 
 def main():
@@ -44,24 +43,12 @@ def main():
     #output air scrubber combinations and cmf total
     i = 0
     print("\n -----FINAL OUTPUT-----")
-    #print(f"Length: {roomLength}, Width: {roomWidth}, Height: {roomHeight}, Air Changes: {airChanges}, Units: {units}, CFM: {cfmTarget}")
     finalList = []
     
-    #show quantity of airscrubber in output([as1, as1] -> [2 as1])
-    for combo in final:
-        counts = Counter(combo)
-        result = []
-        for scrubber in combo:
-            if containsSlash(scrubber):
-                result.append(scrubber)
-            else:
-                if counts[scrubber] > 0:
-                    result.append(f"{counts[scrubber]} {scrubber}")
-                    counts[scrubber] = 0  # Ensure we only add the formatted string once for each unique scrubber
-        finalList.append(result)
-
+    finalList = countTypes(final)
     print("\n" + f"To maintain {airChanges} airchanges an hour, a total cmf of {cfmTarget:.{5}}({cfmTarget*0.000471947:.{3}}m3/s) is required" + "\n")
     
+    #print combinations in [a1, a1/a2] format
     for combo in finalList:
         if isinstance(finalPrintValues[i], int):
             print(combo, f"[{finalPrintValues[i]}]")
@@ -70,17 +57,20 @@ def main():
             print(combo, finalPrintValues[i])
             i += 1
 
-    print("\n ALL COMBOS")
+    print("\nALL COMBINATIONS")
     
-    #print every single combination
+    
     cmfToName2D(allCombos, scrubbers)
-    print(allCombos)
     
-
     allCombos = removeDuplicates(allCombos)
-    validCombos = removeCombos(allCombos, scrubbers)
+    
+    for combo in countTypes(allCombos):
+        print(combo)
+    
+    validCombos = countTypes(removeCombos(allCombos, scrubbers))
+    print("\nVALID COMBINATIONS")
     for valid in validCombos:
-        print(valid, "here")
+        print(valid)
 
                 
 if __name__ == "__main__":

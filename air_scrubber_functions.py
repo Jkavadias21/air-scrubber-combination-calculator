@@ -1,3 +1,4 @@
+from collections import Counter
 class airScrubber:
 
     amount = 0
@@ -276,9 +277,9 @@ def removeCombos(allCombos, scrubbers):
             for scrubber in scrubbers:
                 if scrubber.scrubberType == asType:
                     scrubberDict[scrubber.scrubberType] += 1
-        print(combo, scrubberDict.items(), "here")
         
         valid = True
+        #print(scrubberDict[scrubber.scrubberType], scrubber.amount, "this one")
         for scrubber in scrubbers:
             if scrubberDict[scrubber.scrubberType] > scrubber.amount:
                 valid = False
@@ -288,5 +289,20 @@ def removeCombos(allCombos, scrubbers):
             
         for scrubber in scrubbers:
             scrubberDict[scrubber.scrubberType] = 0
-    print(validCombos)
     return validCombos
+
+#convert cominations from [a1,a1] format to [2 a1] format
+def countTypes(list):
+    finalList = []
+    for combo in list:
+        counts = Counter(combo)
+        result = []
+        for scrubber in combo:
+            if containsSlash(scrubber):
+                result.append(scrubber)
+            else:
+                if counts[scrubber] > 0:
+                    result.append(f"{counts[scrubber]} {scrubber}")
+                    counts[scrubber] = 0  # Ensure we only add the formatted string once for each unique scrubber
+        finalList.append(result)
+    return finalList
