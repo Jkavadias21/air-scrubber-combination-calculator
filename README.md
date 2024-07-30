@@ -7,5 +7,6 @@ Air Scrubber Calculator.py calculates all possible air scrubber combinations tha
 maintained through the use of air scrubbers, such as mold remediation, plaster removal, and other applications.
 ## Functions
 - Output every possible air scrubber combinations. 
+- Output every combination that is valid for the users current air scrubber stock
 ## Project Goals
 Develop and sharpen my programming, python and web development skills, while creating a product that may be useful in certain contexts. 
