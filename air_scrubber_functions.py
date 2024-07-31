@@ -3,9 +3,10 @@ class airScrubber:
 
     amount = 0
     
-    def __init__(self, scrubberType, cfmValue):
+    def __init__(self, scrubberType, cfmValue, amount):
         self.scrubberType = scrubberType
-        self.cfmValue = cfmValue
+        self.cfmValue = int(cfmValue)
+        self.amount = int(amount)
         
     def setFlag(self, flag):
         self.flag = flag
@@ -13,10 +14,9 @@ class airScrubber:
     def setAmount(self, amount):
         self.amount = int(amount)
 
-    def __str__(self):
-        return f"({self.scrubberType})"
+    def __repr__(self):
+        return f'scruber(type={self.scrubberType}, cfm={self.cfmValue}, amount={self.amount})'
 
-#------------------------function defs--------------------------------------
 #returns list of all combinations of airscrubber that cfms sum to the target cfm or less
 def findScrubberCombos(scrubbersCfms, cfmTar):
     def backtrack(start, path, total):
@@ -213,17 +213,20 @@ def getValidInput(prompt, isInt = False):
                 print("Invalid input. Please enter a valid number.")
 
 #assign validated inputs to respective variables
+#can add scubber reading function to this i believe somehow
 def getInputs():
     #check and assign valid user unit inputs
     while True:
         units = input("Enter m for meters or f for feet: ").lower()
         if units == 'm' or units == 'f':
             break
+        #for testing
         elif units == 's':
-            return units, 50, 50, 20, 1
+            return 50, 50, 20, 1
         
     
     while True:
+        
         try:
             roomLength = getValidInput("Enter room length: ")
             roomWidth = getValidInput("Enter room width: ")
@@ -234,8 +237,79 @@ def getInputs():
         except ValueError:
             print("Invalid input. Please enter valid numbers.")
 
-    return units, roomLength, roomWidth, roomHeight, airChanges 
+    roomLength, roomWidth, roomHeight = meterToFeet(roomLength, roomWidth, roomHeight, units)
     
+    return roomLength, roomWidth, roomHeight, airChanges 
+
+#read users air scrubber information into arrays
+def readScrubbers(scrubbers, scrubbersCfms):
+    while True:
+       scrubberType = input("Enter air scrubber type: ") 
+       scrubberCfm = input("Enter air scrubber CFM rating: ")
+       scrubberAmount = input("Enter air scrubber amount: ")
+       scrubbers.append(airScrubber(scrubberType, scrubberCfm, scrubberAmount))
+
+       moreInputs = input("Do you want to add another air scrubber? (yes/no): ").strip().lower()
+       if moreInputs != 'yes':
+           break;
+    
+    #list that stores all the users air scrubbers cfm values 
+    scrubbersCfms.clear()  # clear the list before adding new values
+    for scrubber in scrubbers:
+        scrubbersCfms.append(scrubber.cfmValue)
+
+    print(scrubbers)
+    
+
+#call all the required functions to calculate combinations and produce the output arrays(filtering, overflow and name to cmf conversions)
+def prepareOutput(scrubberCombos, final, allCombos, scrubbersCfms, cfmTarget, scrubbers, finalPrintValues):
+    #clear existing lists to ensure they start empty
+    scrubberCombos.clear()
+    final.clear()
+    allCombos.clear()
+
+    #extent to change original array instead of just changing it locally
+    scrubberCombos.extend(findScrubberCombos(scrubbersCfms, cfmTarget))
+    final.extend(filterAirScrubbers(scrubberCombos, cfmTarget, scrubbersCfms))
+    allCombos.extend(final + addOverFlowAll(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget))
+    addOverflowScrubber(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
+    final.extend(scrubberCombos)
+    cmfToName2D(final, scrubbers)
+    getCmfSums(finalPrintValues, final, scrubbers)
+
+#organise all combo arrays into a presentable output
+def displayOutput(final, airChanges, finalPrintValues, cfmTarget, scrubbers):
+    #output air scrubber combinations and cmf total
+    i = 0
+    print("\n -----FINAL OUTPUT-----")
+    finalList = []
+    
+    finalList = countTypes(final)
+    print("\n" + f"To maintain {airChanges} airchanges an hour, a total cmf of {cfmTarget:.{5}}({cfmTarget*0.000471947:.{3}}m3/s) is required" + "\n")
+    
+    #print combinations in [a1, a1/a2] format
+    for combo in finalList:
+        if isinstance(finalPrintValues[i], int):
+            print(combo, f"[{finalPrintValues[i]}]")
+            i += 1
+        else:
+            print(combo, finalPrintValues[i])
+            i += 1
+
+    print("\nALL COMBINATIONS")
+    cmfToName2D(allCombos, scrubbers)
+    allCombos = removeDuplicates(allCombos)
+    
+    #print all combinations ([a1,a1],[a1,a2] instead of [a1,a1/a2])
+    for combo in countTypes(allCombos):
+        print(combo)
+    
+    #valid combos are all that match users stock
+    validCombos = countTypes(removeCombos(allCombos, scrubbers))
+    print("\nVALID COMBINATIONS")
+    for valid in validCombos:
+        print(valid)
+
 #convert dimensions from meters to feet
 def meterToFeet(roomLength, roomWidth, roomHeight, units):
     if units == "m":

@@ -2,76 +2,21 @@ from air_scrubber_functions import *
 
 def main():
     finalPrintValues = []
+    scrubberCombos = []
+    final = []
+    allCombos = []
+    scrubbers = []
     scrubbersCfms = []
-    #list to store all scrubbers the user has at their facility
-    scrubbers = [airScrubber("pheonix", 485), airScrubber("xPower", 650), airScrubber("thor", 1000)]
     
-    #allows user to input amount of each air scrubber they have independant of scrubber array population
-    for scrubber in scrubbers:
-        scrubber.setAmount(input(f"enter amount of {scrubber.scrubberType} "))
-    for scrubber in scrubbers:
-        print(scrubber.amount)
-
-
-    #list that stores all the users air scrubbers cfm values 
-    for scrubber in scrubbers:
-        scrubbersCfms.append(scrubber.cfmValue)
-
-    units, roomLength, roomWidth, roomHeight, airChanges = getInputs()
+    readScrubbers(scrubbers, scrubbersCfms)
     
-    roomLength, roomWidth, roomHeight = meterToFeet(roomLength, roomWidth, roomHeight, units)
+    roomLength, roomWidth, roomHeight, airChanges = getInputs()
     
     cfmTarget = calculateTargetCfm(roomLength, roomWidth, roomHeight, airChanges)
+    
+    prepareOutput(scrubberCombos, final, allCombos, scrubbersCfms, cfmTarget, scrubbers, finalPrintValues)
+    displayOutput(allCombos, final, airChanges, finalPrintValues, cfmTarget, scrubbers)
 
-    #perform combination finding, cfm total calculations and combination filtering
-    scrubberCombos = findScrubberCombos(scrubbersCfms, cfmTarget)
-    final = filterAirScrubbers(scrubberCombos, cfmTarget, scrubbersCfms)
-    allCombos = final + addOverFlowAll(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
-    #final originally is all combos who exactly equal the goal
-    addOverflowScrubber(scrubberCombos, scrubbersCfms, scrubbers, cfmTarget)
-    #final below is all combos
-    final = final + scrubberCombos
-    print(final)
-    cmfToName2D(final, scrubbers)
-    
-    #sort output from least elements to most elements
-    #final = sorted(final, key=len)
-    
-    getCmfSums(finalPrintValues, final, scrubbers)
-
-    #output air scrubber combinations and cmf total
-    i = 0
-    print("\n -----FINAL OUTPUT-----")
-    finalList = []
-    
-    finalList = countTypes(final)
-    print("\n" + f"To maintain {airChanges} airchanges an hour, a total cmf of {cfmTarget:.{5}}({cfmTarget*0.000471947:.{3}}m3/s) is required" + "\n")
-    
-    #print combinations in [a1, a1/a2] format
-    for combo in finalList:
-        if isinstance(finalPrintValues[i], int):
-            print(combo, f"[{finalPrintValues[i]}]")
-            i += 1
-        else:
-            print(combo, finalPrintValues[i])
-            i += 1
-
-    print("\nALL COMBINATIONS")
-    
-    
-    cmfToName2D(allCombos, scrubbers)
-    
-    allCombos = removeDuplicates(allCombos)
-    
-    for combo in countTypes(allCombos):
-        print(combo)
-    
-    validCombos = countTypes(removeCombos(allCombos, scrubbers))
-    print("\nVALID COMBINATIONS")
-    for valid in validCombos:
-        print(valid)
-
-                
 if __name__ == "__main__":
     main()
     
@@ -90,3 +35,6 @@ if __name__ == "__main__":
 #add quantities for all
 #make callInputReading function to combine all input reading functionality in one place
 #make cmf/volume calclation function
+#Testing scrubbers = [airScrubber("pheonix", 485), airScrubber("xPower", 650), airScrubber("thor", 1000)]
+
+#check validity of scrubber quantity inputs and scrubber type inputs (important)
