@@ -1,7 +1,4 @@
-# Steamatic-Gipp-Tools
-
-## Tools
-### Airscrubber combinations calculator
+# Air-Scrubber-Combination-Calculator
 ## Description
 Air Scrubber Calculator.py calculates all possible air scrubber combinations that could be used to meet air change requirements for a three-dimensional space. It could be useful for job sites where air purity must be 
 maintained through the use of air scrubbers, such as mold remediation, plaster removal, and other applications.

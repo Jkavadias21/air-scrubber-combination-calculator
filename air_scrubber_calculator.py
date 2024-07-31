@@ -7,7 +7,6 @@ def main():
     scrubbers = [airScrubber("pheonix", 485), airScrubber("xPower", 650), airScrubber("thor", 1000)]
     
     #allows user to input amount of each air scrubber they have independant of scrubber array population
-    asAmt = []
     for scrubber in scrubbers:
         scrubber.setAmount(input(f"enter amount of {scrubber.scrubberType} "))
     for scrubber in scrubbers:
@@ -89,3 +88,5 @@ if __name__ == "__main__":
 #sort by each as type so group all xpower 1 xpower 2 xpower 3 xpower will be listed based on price then in a different column do other as
 #could have search function to verify combination is valid
 #add quantities for all
+#make callInputReading function to combine all input reading functionality in one place
+#make cmf/volume calclation function
