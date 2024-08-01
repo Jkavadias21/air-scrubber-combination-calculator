@@ -297,7 +297,7 @@ def displayOutput(allCombos, final, airChanges, finalPrintValues, cfmTarget, scr
     
     finalList = countTypes(final) #final list is final(slash formated combos [a1, a1, a2/a3]) represented in [2 a1, a2/a3] format
     print("\n" + f"To maintain {airChanges} airchanges an hour, a total cmf of {cfmTarget:.{5}}({cfmTarget*0.000471947:.{3}}m3/s) is required" + "\n")
-    
+    print("\nALL COMBINATIONS(CONDENSED)")
     #print combinations in [a1, a1/a2] format with cfm total next to it [a1, a1/a2] [5cfm, 3cfm]
     for combo in finalList:
         if isinstance(finalPrintValues[i], int):
@@ -307,7 +307,7 @@ def displayOutput(allCombos, final, airChanges, finalPrintValues, cfmTarget, scr
             print(combo, finalPrintValues[i])
             i += 1
 
-    print("\nALL COMBINATIONS")
+    print("\nALL COMBINATIONS(SEPERATE)")
     cmfToName2D(allCombos, scrubbers)
     allCombos = removeDuplicates(allCombos) #allCombos in every combination without duplicates(not slash format)
     
@@ -316,7 +316,7 @@ def displayOutput(allCombos, final, airChanges, finalPrintValues, cfmTarget, scr
         print(combo)
     
     validCombos = countTypes(removeCombos(allCombos, scrubbers)) #valid combos are all combos that match users stock
-    print("\nVALID COMBINATIONS")
+    print("\nALL VALID COMBINATIONS")
     for valid in validCombos:
         print(valid)
 
