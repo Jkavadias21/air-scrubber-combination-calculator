@@ -1,17 +1,13 @@
 from air_scrubber_functions import *
 
+#read user inputs, produce all air scrubber combinations, output results
 def main():
     finalPrintValues = []
     scrubberCombos = []
     final = []
     allCombos = []
-    scrubbers = []
-    scrubbersCfms = []
     
-    readScrubbers(scrubbers, scrubbersCfms)
-    
-    roomLength, roomWidth, roomHeight, airChanges = getInputs()
-    
+    roomLength, roomWidth, roomHeight, airChanges, scrubbers, scrubbersCfms = getInputs()
     cfmTarget = calculateTargetCfm(roomLength, roomWidth, roomHeight, airChanges)
     
     prepareOutput(scrubberCombos, final, allCombos, scrubbersCfms, cfmTarget, scrubbers, finalPrintValues)
