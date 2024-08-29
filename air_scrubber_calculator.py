@@ -2,28 +2,24 @@ from air_scrubber_functions import *
 
 #read user inputs, produce all air scrubber combinations, output results
 def main():
-    finalPrintValues = []
-    scrubberCombos = []
-    final = []
-    allCombos = []
+    originalCombos = [] #store all combos that are less than or equal to target cfm(includes [])
+    allCombos = [] #store all combinations that meet the air purity requirements(originalCombos with overflows added)
     
-
     #testing parameter assignment
     testMode = True;
     if testMode:
-        roomLength = 50
+        roomLength = 40
         roomWidth = 20
         roomHeight = 20
         airChanges = 4
-        scrubbers = [airScrubber("xpower", 500, 3), airScrubber("pheonix", 600, 2), airScrubber("thor", 700, 1)]
-        scrubbersCfms = [500, 600, 700]
+        scrubbers = [AirScrubber("xpower", 500, 2), AirScrubber("pheonix", 600, 2), AirScrubber("thor", 700, 1)]
+        
     else:
-        roomLength, roomWidth, roomHeight, airChanges, scrubbers, scrubbersCfms = getInputs()
+        roomLength, roomWidth, roomHeight, airChanges, scrubbers = get_inputs()
        
-    #program
-    cfmTarget = calculateTargetCfm(roomLength, roomWidth, roomHeight, airChanges)
-    prepareOutput(scrubberCombos, final, allCombos, scrubbersCfms, cfmTarget, scrubbers, finalPrintValues)
-    displayOutput(allCombos, airChanges, cfmTarget, scrubbers)
+    cfmTarget = calculate_target_cfm(roomLength, roomWidth, roomHeight, airChanges)
+    prepare_output(originalCombos, allCombos, cfmTarget, scrubbers)
+    display_output(allCombos, airChanges, cfmTarget, scrubbers)
 
 if __name__ == "__main__":
     main()
@@ -34,6 +30,4 @@ if __name__ == "__main__":
 
 #remove magic numbers
 #make some sort of output filtering(only display 1 of the valid outputs, or show the most efficient output)
-#ermove more redundancies
 #maybe seperate get inputs into a 2 methods, get variables and get scrubbers to reduce method size
-#change function names and comments potentially
