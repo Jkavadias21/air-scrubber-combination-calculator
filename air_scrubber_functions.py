@@ -6,7 +6,7 @@ class AirScrubber:
     def __init__(self, scrubber_type, cfm_value, amount):
         self.scrubber_type = scrubber_type
         self.cfm_value = int(cfm_value)
-        self.amount = int(amount)
+        self.amount = int(amount) # The amount of a specific scrubber a user has
         
     def set_flag(self, flag):
         self.flag = flag
@@ -17,6 +17,7 @@ class AirScrubber:
     def __repr__(self):
         return self.scrubber_type
 
+# Call all functions required to generate combination lists
 def prepare_output(original_combos, all_combos, cfm_target, scrubbers):
     # Clear existing lists to ensure they start empty
     original_combos.clear()
@@ -26,9 +27,11 @@ def prepare_output(original_combos, all_combos, cfm_target, scrubbers):
     original_combos.extend(find_scrubber_combos(scrubbers, cfm_target)) # Find all combination with cfm total less than target cfm
     all_combos.extend(add_overflow_all(original_combos, scrubbers, cfm_target))  # Generate array containing every combination (contains duplicates)
 
+    # Testing
     print("less than cfm combos", original_combos)
     print("added overflows", add_overflow_all(original_combos, scrubbers, cfm_target))
 
+# Display all combinations and calculations
 def display_output(all_combos, air_changes, cfm_target, scrubbers):
     print("\n -----FINAL OUTPUT-----")
     print("\n" + f"To maintain {air_changes} air changes an hour, a total cfm of {cfm_target:.{5}}({cfm_target*0.000471947:.{3}}m³/s) is required" + "\n")
@@ -43,6 +46,7 @@ def display_output(all_combos, air_changes, cfm_target, scrubbers):
     for valid in valid_combos:
         print(valid)
 
+# Generate a list of combinations that have a cfm total less than or equal to target cfm
 def find_scrubber_combos(scrubbers, cfm_target):
     def backtrack(start, path, total):
         if total <= cfm_target:
@@ -56,6 +60,7 @@ def find_scrubber_combos(scrubbers, cfm_target):
     print(result, "this is the result")
     return result
 
+# Return a list of all combinations that meet purity requirements(contains duplicates)
 def add_overflow_all(scrubber_combos, scrubbers, cfm_target):
     all_combos = []
     for combo in scrubber_combos:
@@ -71,30 +76,30 @@ def add_overflow_all(scrubber_combos, scrubbers, cfm_target):
             all_combos.append([cfm_target])
     return all_combos
 
+# Sum all cfm values of scrubbers in a combo list
 def sum_combos_cfm_values(combo):
     total = 0
     for scrubber in combo:
         total += scrubber.cfm_value
     return total
 
+# Check if value is a number
 def is_number(s):
     try:
         float(s)
-        # Return true if value is a number
-        return True
+        return True # Is number
     except ValueError:
-        # Return false if value is not a number
-        return False
-    
+        return False # Is not number
+
+# Check if value is an integer 
 def is_int(s):
     try:
         int(s)
-        # Return true if value is an int
-        return True
+        return True # Is integer
     except ValueError:
-        # Return false if value is not an int
-        return False
+        return False # Is not integer
     
+# Read in valid inputs from user
 def get_valid_input(prompt, is_int=False):
     while True:
         try:
@@ -111,11 +116,11 @@ def get_valid_input(prompt, is_int=False):
             else:
                 print("Invalid input. Please enter a valid number.")
 
-def get_inputs():
+# Store user inputs pertaining to their current air scrubbers and stock
+def get_scrubber_inputs():
     scrubbers = []
-    scrubbers_cfms = []
     scrubber_types = set()
-    # Read in and store users air scrubbers in array
+    
     while True:
         # Make sure any air scrubber type is only entered once
         while True:
@@ -139,15 +144,18 @@ def get_inputs():
                 print("Invalid input. Please type 'yes' or 'no'.")
         if more_inputs != 'yes':
             break
-
-    # Check and assign valid user unit inputs
+        print(scrubbers, "hehehe")
+    return scrubbers # Return list containing users air scrubber objects
+    
+# Assign user inputs pertaining to cfm calculations
+def get_calculation_inputs():
     while True:
         units = input("Enter m for meters or f for feet: ").lower()
         if units == 'm' or units == 'f':
             break
         # For testing
         elif units == 's':
-            return 50, 50, 20, 1, scrubbers, scrubbers_cfms
+            return 50, 50, 20, 1
     # Check and assign valid user volume and air change inputs
     while True:
         try:
@@ -163,7 +171,7 @@ def get_inputs():
     # Perform required unit conversions
     room_length, room_width, room_height = meter_to_feet(room_length, room_width, room_height, units)
     
-    return room_length, room_width, room_height, air_changes, scrubbers
+    return room_length, room_width, room_height, air_changes
 
 # Convert room dimensions from meters to feet
 def meter_to_feet(room_length, room_width, room_height, units):
@@ -222,6 +230,7 @@ def remove_combos(all_combos, scrubbers):
     
     return valid_combos
 
+# Represent combos in [2 as1] format instead of [as1, as1]
 def count_types(lst):
     final_list = []
     for combo in lst:
