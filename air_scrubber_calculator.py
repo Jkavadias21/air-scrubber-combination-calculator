@@ -1,4 +1,5 @@
-from air_scrubber_functions import *
+from core import*
+from input_handlers import*
 
 #read user inputs, produce all air scrubber combinations, output results
 def main():
@@ -9,10 +10,10 @@ def main():
     testMode = True;
     if testMode:
         roomLength = 30
-        roomWidth = 20
+        roomWidth = 40
         roomHeight = 20
-        airChanges = 4
-        scrubbers = [AirScrubber("xpower", 800, 2), AirScrubber("pheonix", 600, 2), AirScrubber("thor", 700, 1)]
+        airChanges = 6
+        scrubbers = [AirScrubber("xpower", 200, 2), AirScrubber("pheonix", 600, 2), AirScrubber("thor", 700, 2)]
         
     else:
         scrubbers = get_scrubber_inputs()
