@@ -85,7 +85,7 @@ def yes_no_check(input_prompt, error_string):
             first_prompt = False
         # Print error string if non yes or no string was typed
         else:
-            user_input = input(error_string)
+            user_input = input(error_string) #<- could change the error string to a static string like invalid input please type yes or no
         # Exit if yes or no was tpyed
         if user_input.strip().lower() == "yes":
             return True

@@ -33,3 +33,4 @@ if __name__ == "__main__":
 #make some sort of output filtering(only display 1 of the valid outputs, or show the most efficient output) main priority
 #maybe seperate get inputs into a 2 methods, get variables and get scrubbers to reduce method size
 #remove magic numbers
+#could change the error string to a static string like invalid input please type yes or no

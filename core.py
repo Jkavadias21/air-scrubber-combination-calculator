@@ -130,22 +130,13 @@ def display_output(all_combos, air_changes, cfm_target, scrubbers):
     print("\n" + f"To maintain {air_changes} air changes an hour, a total cfm of {cfm_target:.5}({cfm_target*0.000471947:.3}m³/s) is required" + "\n")
     
     all_combos = remove_duplicates(all_combos)
-    print("ALL COMBINATIONS")
-    print_output_combo(all_combos, "There are no combinations that meet your air purity requirements") # Print every combo
+    print_output_combo(all_combos, "There are no combinations that meet your air purity requirements", "ALL COMBINATIONS") # Print every combo
     
     valid_combos = remove_invalid_combos(all_combos, scrubbers)
-    print("\nALL VALID COMBINATIONS")
-    print_output_combo(valid_combos, "There are no combinations that meet your current stock") # Print all valid combos
+    print_output_combo(valid_combos, "There are no combinations that meet your current stock", "ALL VALID COMBINATIONS") # Print all valid combos
     
     sort_outputs(valid_combos)
     
-    
-
-
-#all combos = scrubber list, after applying count_types it becomes a string list("2 pheonix"), 
-#so i want to sort and organise the remove_invalid_combos(all_combos, scrubbers) list
-#then get the first item after sorting and print that one for the filtered output
-
 #with count types instead of passing in list of list could pass in each combo list seperately and count type on that
 #so we get 
         #for valid in valid_combos
