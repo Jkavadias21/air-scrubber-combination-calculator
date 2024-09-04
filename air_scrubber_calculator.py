@@ -13,11 +13,13 @@ def main():
         roomWidth = 40
         roomHeight = 20
         airChanges = 6
-        scrubbers = [AirScrubber("xpower", 200, 2), AirScrubber("pheonix", 600, 2), AirScrubber("thor", 700, 2)]
+        scrubbers = [AirScrubber("xpower", 200, 2, 1, 1), AirScrubber("pheonix", 600, 2, 2, 2), AirScrubber("thor", 700, 2, 3, 3)]
         
     else:
         scrubbers = get_scrubber_inputs()
+        print(scrubbers[0].cfm_value)
         roomLength, roomWidth, roomHeight, airChanges = get_calculation_inputs()
+        
         
        
     cfmTarget = calculate_target_cfm(roomLength, roomWidth, roomHeight, airChanges)
@@ -34,3 +36,4 @@ if __name__ == "__main__":
 #maybe seperate get inputs into a 2 methods, get variables and get scrubbers to reduce method size
 #remove magic numbers
 #could change the error string to a static string like invalid input please type yes or no
+#fix meter to feet

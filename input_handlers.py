@@ -1,10 +1,14 @@
 from utils import*
 
 # Read in valid inputs from user
-def get_valid_input(prompt, is_int=False):
+def get_valid_input(prompt, is_skipable = False, is_int=False):
     while True:
         try:
             value = input(prompt)
+            if is_skipable and value == "": # Skip skipable inputs by typing enter
+                print("Input skipped")
+                return -1 # If input was skipped assign a place holder value of -1
+            
             if is_int:
                 value = int(value)
             else:
@@ -35,7 +39,11 @@ def get_scrubber_inputs():
         
         scrubber_cfm = get_valid_input("Enter air scrubber CFM rating: ")
         scrubber_amount = get_valid_input("Enter air scrubber amount: ", True)
-        scrubbers.append(AirScrubber(scrubber_type, scrubber_cfm, scrubber_amount))
+        scrubber_weight = get_valid_input("Enter air scrubber weight (or press Enter to skip): ", True)
+        scrubber_price = get_valid_input("Enter air scrubber price (or press Enter to skip): ", True)
+
+        scrubbers.append(AirScrubber(scrubber_type, scrubber_cfm, scrubber_amount, scrubber_weight, scrubber_price))
+        
 
         # Check if user wants to add more air scrubbers or not
         while True:
@@ -46,9 +54,9 @@ def get_scrubber_inputs():
                 print("Invalid input. Please type 'yes' or 'no'.")
         if more_inputs != 'yes':
             break
-    return scrubbers # Return list containing users air scrubber objects
+   
     
-    # Assign user inputs pertaining to cfm calculations
+# Assign user inputs pertaining to cfm calculations
 def get_calculation_inputs():
     while True:
         units = input("Enter m for meters or f for feet: ").lower()
@@ -63,7 +71,7 @@ def get_calculation_inputs():
             room_length = get_valid_input("Enter room length: ")
             room_width = get_valid_input("Enter room width: ")
             room_height = get_valid_input("Enter room height: ")
-            air_changes = get_valid_input("Enter required air changes:", True)
+            air_changes = get_valid_input("Enter required air changes:", False, True)
             print(f"Length: {room_length}, Width: {room_width}, Height: {room_height}, Air Changes: {air_changes}")
             break  # Exit the loop if all inputs are valid
         except ValueError:

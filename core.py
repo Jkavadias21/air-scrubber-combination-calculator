@@ -4,10 +4,12 @@ from input_handlers import*
 
 class AirScrubber:
     amount = 0
-    def __init__(self, scrubber_type, cfm_value, amount):
+    def __init__(self, scrubber_type, cfm_value, amount, weight, price):
         self.scrubber_type = scrubber_type
-        self.cfm_value = int(cfm_value)
+        self.cfm_value = float(cfm_value)
         self.amount = int(amount) # The amount of a specific scrubber a user has
+        self.weight = float(weight)
+        self.price = float(price) # Price of running the air scrubber
         
     def set_flag(self, flag):
         self.flag = flag
@@ -142,3 +144,4 @@ def display_output(all_combos, air_changes, cfm_target, scrubbers):
         #for valid in valid_combos
         #   print(count_types(valid))
 #instead of what we currently have count_types(valid_combos)
+#maybe instead of typing error message just repeat the initial prompt

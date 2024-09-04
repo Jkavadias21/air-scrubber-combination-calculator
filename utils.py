@@ -85,13 +85,15 @@ def sort_outputs(lst):
 
         # Add more sorting options here as needed
     }
-
+    
     type_string = "/".join(sorting_options_dict.keys())
     if yes_no_check("Would you like to sort output combos? ", "Invalid input, please type yes or no "):
         sort_strings = input(f"Please select sorting criteria from {type_string}, seperated by commas: ")
-        selected_sorts = [sort_types.strip() for sort_types in sort_strings.split(",")]
+        selected_sorts = [
+            sort_types.strip() for sort_types in sort_strings.split(",")
+            if sort_types.strip() in sorting_options_dict.keys()
+        ]
         
-
         for sort in selected_sorts:
             option = sorting_options_dict.get(sort)
             if(option is not None):
@@ -100,12 +102,9 @@ def sort_outputs(lst):
                 print(sort, "is none")
         
             
-        
-        #for option in sorting_options:
-           # if yes_no_check(option["prompt"], option["error"]):
-               # print(f"\n{option['title']}")
-                #print_output_combo(sorted(lst, key=option["key"]), "")
-    
+#to-do, add methods for sorting based on price and weight now that we have these vairable, for now if any scrubbers hava skipped
+#weight or price say to the user that, that sorting criteria is not availbale since fields are missing, then just apply those sorting
+#then add those functions to the dictionary where the lambda function normally is and everything should work
 
     
     
