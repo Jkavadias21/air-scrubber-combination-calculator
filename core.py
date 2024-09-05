@@ -22,8 +22,6 @@ class AirScrubber:
     def __repr__(self):
         return self.scrubber_type
     
-    def get_skippable_variables(self):
-        return [self.weight, self.price]
     
 # Generate a list of combinations that have a cfm total less than or equal to target cfm
 def find_scrubber_combos(scrubbers, cfm_target):

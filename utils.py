@@ -92,10 +92,6 @@ def sort_outputs(lst, scrubbers):
         # Add more sorting options here as needed
     }
      
-    
-    
-
-
     type_string = "/".join(sorting_options_dict.keys())
     if yes_no_check("Would you like to sort output combos? ", "Invalid input, please type yes or no "):
         sort_strings = input(f"Please select sorting criteria from {type_string}, seperated by commas: ") # Read desired user sorts
@@ -107,9 +103,25 @@ def sort_outputs(lst, scrubbers):
         
         # Apply all valid sorting options and print output
         for sort in selected_sorts:
+            print(sort)
+            print(selected_sorts, "selected")
             option = sorting_options_dict.get(sort)
+            
+            # Re entering skipped input logic
+            if not option["can_sort"]: # Check if has skipped any of the fields pertaining to the current sort in selected_sorts
+                print(f"you have not entered all {sort}")
+                
+                if yes_no_check("Would you like to add the skipped value: ", "incorrect input: "): # Allow user to input previously skipped field 
+                    for skipped_scrubbers in [scrubber for scrubber in scrubbers if getattr(scrubber, sort) == -1]:
+                        setattr(skipped_scrubbers, sort, get_valid_input(f"Enter skipped {sort} value", True, False))   # Assign new input to previously skipped field
+                        option["can_sort"] = True
+            
+            # Sorting logic
             if(option is not None and option["can_sort"]):
                 print_output_combo(sorted(lst, key=option["key"]), "", option["heading"])
+
+    for scrubber in scrubbers:
+        print(scrubber.weight, scrubber.price, "values")
             
 
 # Sort combos based on a totals of scrubber values eg weight or price
@@ -128,6 +140,13 @@ def totaling_sort(combo, sort_type):
 #to-do, add methods for sorting based on price and weight now that we have these vairable, for now if any scrubbers hava skipped
 #weight or price say to the user that, that sorting criteria is not availbale since fields are missing, then just apply those sorting
 #then add those functions to the dictionary where the lambda function normally is and everything should work
+#add option to sort by all criterias by inputting "all" when prompted to select sorting criterias
+#adjust all yes_no_check error strings, maybe just make it a static string
+#add input testing to not allow negative numbers
+#add filtering to just print out firx x outputs
+#add logic to deal with people typing yes to re entering weight values but not wanting to and deal with all those edge cases
+#convert to application, lots of things will probably need to be reworked anyways, could start new repo if i want, just leave program in 
+#usable command line state then move on dont need perfection
 
     
     

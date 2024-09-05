@@ -7,13 +7,13 @@ def main():
     allCombos = [] #store all combinations that meet the air purity requirements(originalCombos with overflows added)
     
     # Testing parameter assignments
-    testMode = False;
+    testMode = True;
     if testMode:
         roomLength = 30
         roomWidth = 40
         roomHeight = 30
         airChanges = 6
-        scrubbers = [AirScrubber("xpower", 200, 2, 1, 3), AirScrubber("pheonix", 600, 10, 2, 2), AirScrubber("thor", 700, 10, 3, 2)]
+        scrubbers = [AirScrubber("xpower", 200, 2, -1, 3), AirScrubber("pheonix", 600, 10, 1, -1), AirScrubber("thor", 700, 10, 3, 2)]
         
     else:
         scrubbers = get_scrubber_inputs()

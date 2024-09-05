@@ -38,9 +38,9 @@ def get_scrubber_inputs():
                 break
         
         scrubber_cfm = get_valid_input("Enter air scrubber CFM rating: ")
-        scrubber_amount = get_valid_input("Enter air scrubber amount: ", True)
-        scrubber_weight = get_valid_input("Enter air scrubber weight (or press Enter to skip): ", True)
-        scrubber_price = get_valid_input("Enter air scrubber price (or press Enter to skip): ", True)
+        scrubber_amount = get_valid_input("Enter air scrubber amount: ", False, True)
+        scrubber_weight = get_valid_input("Enter air scrubber weight (or press Enter to skip): ", True, False)
+        scrubber_price = get_valid_input("Enter air scrubber price (or press Enter to skip): ", True, False)
 
         scrubbers.append(AirScrubber(scrubber_type, scrubber_cfm, scrubber_amount, scrubber_weight, scrubber_price))
         
