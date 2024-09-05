@@ -50,6 +50,7 @@ def meter_to_feet(room_length, room_width, room_height, units):
 
 # Print all element of a list in counted types format
 def print_output_combo(lst, empty_string, heading_string):
+    i = 0
     if(heading_string):
         print("\n" + heading_string) #print the combo list description eg ALL PRICE SORTED COMBOS(newline to seperate from previous output)
     else:
@@ -58,50 +59,72 @@ def print_output_combo(lst, empty_string, heading_string):
     from core import count_types
     if lst:
         for combo in count_types(lst): #could change from count_types(lst) to print(count_types(element))
-            print(combo)
+            print(combo, totaling_sort(lst[i], "price"), totaling_sort(lst[i], "weight")) #extra fields are for testing
+            i += 1
     else:
-        print(empty_string)
+        print(empty_string) # Print specified error message if there are no combos in list
 
-
+def all_have_attribute(scrubbers, attribute):
+    return all(getattr(scrubber, attribute) != -1 for scrubber in scrubbers)
 
 # Sort combo lists based various metrics
-def sort_outputs(lst):
+def sort_outputs(lst, scrubbers):
     sorting_options_dict = {
         "amount": {"prompt": "sort on AMOUNT?", 
             "error": "", 
             "key": lambda x: len(x), 
             "heading": "SORTED ON AMOUNT",
+            "can_sort": True # Always allow amount sorting
          }, 
         "weight": {"prompt": "sort on WEIGTH?", 
             "error": "", 
-            "key": lambda x: len(x), 
+            "key": lambda x: totaling_sort(x, "weight"), 
             "heading": "SORTED ON WEIGHT",
+            "can_sort": all_have_attribute(scrubbers, "weight") # Only allow price sorting if no scrubbers have a skipped weight field
          }, 
         "price": {"prompt": "sort on PRICE?", 
             "error": "", 
-            "key": lambda x: len(x), 
+            "key": lambda x: totaling_sort(x, "price"), 
             "heading": "SORTED ON PRICE",
+            "can_sort": all_have_attribute(scrubbers, "price") # Only allow price sorting if no scrubbers have a skipped price field
          }, 
 
         # Add more sorting options here as needed
     }
+     
     
+    
+
+
     type_string = "/".join(sorting_options_dict.keys())
     if yes_no_check("Would you like to sort output combos? ", "Invalid input, please type yes or no "):
-        sort_strings = input(f"Please select sorting criteria from {type_string}, seperated by commas: ")
+        sort_strings = input(f"Please select sorting criteria from {type_string}, seperated by commas: ") # Read desired user sorts
+        
         selected_sorts = [
             sort_types.strip() for sort_types in sort_strings.split(",")
             if sort_types.strip() in sorting_options_dict.keys()
-        ]
+        ] # Only accept a sort into selected_sorts if it is a valid sorting option
         
+        # Apply all valid sorting options and print output
         for sort in selected_sorts:
             option = sorting_options_dict.get(sort)
-            if(option is not None):
+            if(option is not None and option["can_sort"]):
                 print_output_combo(sorted(lst, key=option["key"]), "", option["heading"])
-            else:
-                print(sort, "is none")
-        
             
+
+# Sort combos based on a totals of scrubber values eg weight or price
+def totaling_sort(combo, sort_type):
+    total = 0
+    for scrubber in combo:
+        total += getattr(scrubber, sort_type)
+    return total
+
+# Check if any inputs have been skipped and reject those that have 
+
+    
+            
+
+
 #to-do, add methods for sorting based on price and weight now that we have these vairable, for now if any scrubbers hava skipped
 #weight or price say to the user that, that sorting criteria is not availbale since fields are missing, then just apply those sorting
 #then add those functions to the dictionary where the lambda function normally is and everything should work

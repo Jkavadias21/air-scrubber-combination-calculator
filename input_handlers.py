@@ -44,7 +44,6 @@ def get_scrubber_inputs():
 
         scrubbers.append(AirScrubber(scrubber_type, scrubber_cfm, scrubber_amount, scrubber_weight, scrubber_price))
         
-
         # Check if user wants to add more air scrubbers or not
         while True:
             more_inputs = input("Do you want to add another air scrubber? (yes/no): ").strip().lower()
@@ -54,6 +53,7 @@ def get_scrubber_inputs():
                 print("Invalid input. Please type 'yes' or 'no'.")
         if more_inputs != 'yes':
             break
+    return scrubbers
    
     
 # Assign user inputs pertaining to cfm calculations
@@ -64,7 +64,7 @@ def get_calculation_inputs():
             break
         # For testing
         elif units == 's':
-            return 50, 50, 20, 1
+            return 10, 10, 10, 1
     # Check and assign valid user volume and air change inputs
     while True:
         try:

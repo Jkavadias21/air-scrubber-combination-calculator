@@ -10,6 +10,8 @@ class AirScrubber:
         self.amount = int(amount) # The amount of a specific scrubber a user has
         self.weight = float(weight)
         self.price = float(price) # Price of running the air scrubber
+        self.no_weight = (weight == -1)
+        self.no_price = (weight == -1)
         
     def set_flag(self, flag):
         self.flag = flag
@@ -19,6 +21,9 @@ class AirScrubber:
 
     def __repr__(self):
         return self.scrubber_type
+    
+    def get_skippable_variables(self):
+        return [self.weight, self.price]
     
 # Generate a list of combinations that have a cfm total less than or equal to target cfm
 def find_scrubber_combos(scrubbers, cfm_target):
@@ -136,8 +141,7 @@ def display_output(all_combos, air_changes, cfm_target, scrubbers):
     
     valid_combos = remove_invalid_combos(all_combos, scrubbers)
     print_output_combo(valid_combos, "There are no combinations that meet your current stock", "ALL VALID COMBINATIONS") # Print all valid combos
-    
-    sort_outputs(valid_combos)
+    sort_outputs(valid_combos, scrubbers)
     
 #with count types instead of passing in list of list could pass in each combo list seperately and count type on that
 #so we get 
