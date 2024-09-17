@@ -40,17 +40,16 @@ def find_scrubber_combos(scrubbers, cfm_target):
 # Return a list of all combinations that meet purity requirements(contains duplicates)
 def add_overflow_all(scrubber_combos, scrubbers, cfm_target):
     all_combos = []
+    for x in count_types(scrubber_combos):
+        print(x)
     for combo in scrubber_combos:
-        if combo != [cfm_target]:
-            for scrubber in scrubbers:
-                # Add overflow scrubber only if the combo is one scrubber away from exceeding the cfm target
-                if (sum_combos_cfm_values(combo) + scrubber.cfm_value > cfm_target and
-                    scrubber.cfm_value != cfm_target and
-                    sum_combos_cfm_values(combo) != cfm_target):
-                    overflowed_combo = combo + [scrubber]
-                    all_combos.append(overflowed_combo)
-        else:
-            all_combos.append([cfm_target])
+        for scrubber in scrubbers:
+            # Add overflow scrubber only if the combo is one scrubber away from exceeding or meeting the cfm target
+            if (sum_combos_cfm_values(combo) + scrubber.cfm_value >= cfm_target and
+                scrubber.cfm_value != cfm_target and
+                sum_combos_cfm_values(combo) != cfm_target):
+                overflowed_combo = combo + [scrubber]
+                all_combos.append(overflowed_combo)
     return all_combos
 
 # Calculate cfm value required to meet air purity standards
@@ -147,3 +146,6 @@ def display_output(all_combos, air_changes, cfm_target, scrubbers):
         #   print(count_types(valid))
 #instead of what we currently have count_types(valid_combos)
 #maybe instead of typing error message just repeat the initial prompt
+
+#further analyse overflow adding, seems to be working fine but need to make sure since its crucial to the operation
+#also make sure the intital <= cfm target functionality is correct(find_scrubber_combo)

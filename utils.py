@@ -58,8 +58,8 @@ def print_output_combo(lst, empty_string, heading_string):
         
     from core import count_types
     if lst:
-        for combo in count_types(lst): #could change from count_types(lst) to print(count_types(element))
-            print(combo, totaling_sort(lst[i], "price"), totaling_sort(lst[i], "weight")) #extra fields are for testing
+        for combo in lst: #could change from count_types(lst) to print(count_types(element))
+            print(combo, totaling_sort(lst[i], "price"), totaling_sort(lst[i], "weight"),) #extra fields are for testing
             i += 1
     else:
         print(empty_string) # Print specified error message if there are no combos in list
@@ -69,6 +69,7 @@ def all_have_attribute(scrubbers, attribute):
 
 # Sort combo lists based various metrics
 def sort_outputs(lst, scrubbers):
+    from utils import yes_no_check
     sorting_options_dict = {
         "amount": {"prompt": "sort on AMOUNT?", 
             "error": "", 
@@ -104,25 +105,20 @@ def sort_outputs(lst, scrubbers):
         # Apply all valid sorting options and print output
         for sort in selected_sorts:
             print(sort)
-            print(selected_sorts, "selected")
             option = sorting_options_dict.get(sort)
             
             # Re entering skipped input logic
             if not option["can_sort"]: # Check if has skipped any of the fields pertaining to the current sort in selected_sorts
-                print(f"you have not entered all {sort}")
+                print(f"You have not assigned a {sort} value to all inputted air scrubbers!")
                 
                 if yes_no_check("Would you like to add the skipped value: ", "incorrect input: "): # Allow user to input previously skipped field 
                     for skipped_scrubbers in [scrubber for scrubber in scrubbers if getattr(scrubber, sort) == -1]:
-                        setattr(skipped_scrubbers, sort, get_valid_input(f"Enter skipped {sort} value", True, False))   # Assign new input to previously skipped field
+                        setattr(skipped_scrubbers, sort, get_valid_input(f"Enter {skipped_scrubbers.scrubber_type} {sort} value: ", True, False))   # Assign new input to previously skipped field
                         option["can_sort"] = True
             
             # Sorting logic
             if(option is not None and option["can_sort"]):
                 print_output_combo(sorted(lst, key=option["key"]), "", option["heading"])
-
-    for scrubber in scrubbers:
-        print(scrubber.weight, scrubber.price, "values")
-            
 
 # Sort combos based on a totals of scrubber values eg weight or price
 def totaling_sort(combo, sort_type):
@@ -147,6 +143,9 @@ def totaling_sort(combo, sort_type):
 #add logic to deal with people typing yes to re entering weight values but not wanting to and deal with all those edge cases
 #convert to application, lots of things will probably need to be reworked anyways, could start new repo if i want, just leave program in 
 #usable command line state then move on dont need perfection
+
+#print amount, price, weight next to combo in output just for users clarity and selection
+#with weight or price just return heighest
 
     
     

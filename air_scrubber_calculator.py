@@ -13,7 +13,7 @@ def main():
         roomWidth = 40
         roomHeight = 30
         airChanges = 6
-        scrubbers = [AirScrubber("xpower", 200, 2, -1, 3), AirScrubber("pheonix", 600, 10, 1, -1), AirScrubber("thor", 700, 10, 3, 2)]
+        scrubbers = [AirScrubber("xpower", 200, 2, -1, -1), AirScrubber("pheonix", 600, 10, 1, -1), AirScrubber("thor", 700, 10, 3, 2)]
         
     else:
         scrubbers = get_scrubber_inputs()
@@ -37,3 +37,7 @@ if __name__ == "__main__":
 #remove magic numbers
 #could change the error string to a static string like invalid input please type yes or no
 #fix meter to feet
+#change input reading strings to make it more readible
+
+#could try and deal with cases like thor = 700, phoenix = 200, [thor, thor, thor, thor, thor, pheonix] is valid for cfm total of 3600
+#but [pheonix, thor, thor, thor, thor, thor] is also valid, but one is not needed due to redundancy

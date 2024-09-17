@@ -58,6 +58,7 @@ def get_scrubber_inputs():
     
 # Assign user inputs pertaining to cfm calculations
 def get_calculation_inputs():
+    from utils import meter_to_feet
     while True:
         units = input("Enter m for meters or f for feet: ").lower()
         if units == 'm' or units == 'f':
