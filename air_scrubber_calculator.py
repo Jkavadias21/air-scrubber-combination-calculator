@@ -6,11 +6,13 @@ def main():
     originalCombos = [] #store all combos that are less than or equal to target cfm(includes [])
     allCombos = [] #store all combinations that meet the air purity requirements(originalCombos with overflows added)
     
+    print("subset result", is_subset([AirScrubber("xpower", 200, 2, -1, -1), AirScrubber("pheonix", 600, 10, 1, -1), AirScrubber("pheonix", 600, 10, 1, -1)], [AirScrubber("xpower", 200, 2, -1, -1), AirScrubber("pheonix", 600, 10, 1, -1)]))
+
     # Testing parameter assignments
     testMode = True;
     if testMode:
-        roomLength = 30
-        roomWidth = 40
+        roomLength = 20
+        roomWidth = 20
         roomHeight = 30
         airChanges = 6
         scrubbers = [AirScrubber("xpower", 200, 2, -1, -1), AirScrubber("pheonix", 600, 10, 1, -1), AirScrubber("thor", 700, 10, 3, 2)]

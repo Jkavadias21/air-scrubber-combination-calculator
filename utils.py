@@ -1,4 +1,5 @@
 from input_handlers import*
+from collections import Counter
 
 
 class AirScrubber:
@@ -58,7 +59,7 @@ def print_output_combo(lst, empty_string, heading_string):
         
     from core import count_types
     if lst:
-        for combo in lst: #could change from count_types(lst) to print(count_types(element))
+        for combo in count_types(lst): #could change from count_types(lst) to print(count_types(element))
             print(combo, totaling_sort(lst[i], "price"), totaling_sort(lst[i], "weight"),) #extra fields are for testing
             i += 1
     else:
@@ -126,6 +127,46 @@ def totaling_sort(combo, sort_type):
     for scrubber in combo:
         total += getattr(scrubber, sort_type)
     return total
+
+# Function to check if list2 is a subset of list1 (considering counts)
+def is_subset(list1, list2):
+    combo1 = Counter(list1)
+    combo2 = Counter(list2)
+    
+    # Check if for every element in list2, list1 has at least as many occurrences
+    for element in combo2:
+        if combo2[element] > combo1.get(element, 0):
+            return False
+    return True
+
+def remove_lists_with_subsets(lists):
+    result = []
+    removed_with_subsets = []
+
+    for i, l1 in enumerate(lists):
+        is_super_set = False
+        subset_found = None
+        for j, l2 in enumerate(lists):
+            if i != j and is_subset(l1, l2):  # Checking if l1 has l2 as a subset
+                is_super_set = True
+                subset_found = l2
+                break
+        if not is_super_set:  # If l1 is not a superset of any other list, keep it
+            result.append(l1)
+        else:
+            removed_with_subsets.append((l1, subset_found))  # Store removed element and its subset
+
+    # Print the removed elements and their corresponding subsets
+    print("\nRemoved Lists and Corresponding Subsets:")
+    for removed, subset in removed_with_subsets:
+        print(f"Removed: {removed}, Subset Found: {subset}")
+    
+    # Print the filtered lists with an identifier
+    print("\nFiltered (Leftover) Lists:")
+    for idx, filtered in enumerate(result, 1):  # Use enumerate to add index starting from 1
+        print(f"{idx}: {filtered}")
+    
+    return result
 
 # Check if any inputs have been skipped and reject those that have 
 

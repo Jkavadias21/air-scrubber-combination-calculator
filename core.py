@@ -19,6 +19,13 @@ class AirScrubber:
     def set_amount(self, amount):
         self.amount = int(amount)
 
+    def __hash__(self):
+        return hash((self.scrubber_type))
+    
+    def __eq__(self, other):
+        return isinstance(other, AirScrubber) and self.scrubber_type == other.scrubber_type
+        
+
     def __repr__(self):
         return self.scrubber_type
     
@@ -40,8 +47,7 @@ def find_scrubber_combos(scrubbers, cfm_target):
 # Return a list of all combinations that meet purity requirements(contains duplicates)
 def add_overflow_all(scrubber_combos, scrubbers, cfm_target):
     all_combos = []
-    for x in count_types(scrubber_combos):
-        print(x)
+    
     for combo in scrubber_combos:
         for scrubber in scrubbers:
             # Add overflow scrubber only if the combo is one scrubber away from exceeding or meeting the cfm target
@@ -124,9 +130,25 @@ def prepare_output(original_combos, all_combos, cfm_target, scrubbers):
     original_combos.extend(find_scrubber_combos(scrubbers, cfm_target)) # Find all combination with cfm total less than target cfm
     all_combos.extend(add_overflow_all(original_combos, scrubbers, cfm_target))  # Generate array containing every combination (contains duplicates)
 
+
+    print("\nadded overflows")
+    for combo in remove_duplicates(add_overflow_all(original_combos, scrubbers, cfm_target)):
+        print(combo)
+
+    
+    print("\n---------------------------------------\n")
+    
+
+    remove_lists_with_subsets(remove_duplicates(all_combos)) #still in testing state, logic seems to be working
+        
+    
+    
+
     # Testing
-    print("less than cfm combos", original_combos)
-    print("added overflows", add_overflow_all(original_combos, scrubbers, cfm_target))
+    print("\nless than cfm combos")
+    for combo in remove_duplicates(original_combos):
+        print(combo)
+    
 
 # Display all combinations and calculations
 def display_output(all_combos, air_changes, cfm_target, scrubbers):
