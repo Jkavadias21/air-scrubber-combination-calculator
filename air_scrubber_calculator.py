@@ -5,17 +5,16 @@ from input_handlers import*
 def main():
     originalCombos = [] #store all combos that are less than or equal to target cfm(includes [])
     allCombos = [] #store all combinations that meet the air purity requirements(originalCombos with overflows added)
-    
-    print("subset result", is_subset([AirScrubber("xpower", 200, 2, -1, -1), AirScrubber("pheonix", 600, 10, 1, -1), AirScrubber("pheonix", 600, 10, 1, -1)], [AirScrubber("xpower", 200, 2, -1, -1), AirScrubber("pheonix", 600, 10, 1, -1)]))
+    no_subset_combos = [] #store all combinations that meet air purity requirements without combo subsets/redundancies
 
     # Testing parameter assignments
     testMode = True;
     if testMode:
         roomLength = 20
-        roomWidth = 20
-        roomHeight = 30
-        airChanges = 6
-        scrubbers = [AirScrubber("xpower", 200, 2, -1, -1), AirScrubber("pheonix", 600, 10, 1, -1), AirScrubber("thor", 700, 10, 3, 2)]
+        roomWidth = 30
+        roomHeight = 50
+        airChanges = 3
+        scrubbers = [AirScrubber("xpower", 300, 2, 5, -1), AirScrubber("pheonix", 500, 10, 1, -1), AirScrubber("thor", 900, 10, 3, 50)]
         
     else:
         scrubbers = get_scrubber_inputs()
@@ -25,8 +24,8 @@ def main():
         
        
     cfmTarget = calculate_target_cfm(roomLength, roomWidth, roomHeight, airChanges)
-    prepare_output(originalCombos, allCombos, cfmTarget, scrubbers)
-    display_output(allCombos, airChanges, cfmTarget, scrubbers)
+    prepare_output(originalCombos, allCombos, no_subset_combos, cfmTarget, scrubbers)
+    display_output(no_subset_combos, airChanges, cfmTarget, scrubbers)
 
 if __name__ == "__main__":
     main()

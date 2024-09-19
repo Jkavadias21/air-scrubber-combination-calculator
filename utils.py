@@ -60,7 +60,7 @@ def print_output_combo(lst, empty_string, heading_string):
     from core import count_types
     if lst:
         for combo in count_types(lst): #could change from count_types(lst) to print(count_types(element))
-            print(combo, totaling_sort(lst[i], "price"), totaling_sort(lst[i], "weight"),) #extra fields are for testing
+            print(combo) #extra fields are for testing
             i += 1
     else:
         print(empty_string) # Print specified error message if there are no combos in list
@@ -95,7 +95,7 @@ def sort_outputs(lst, scrubbers):
     }
      
     type_string = "/".join(sorting_options_dict.keys())
-    if yes_no_check("Would you like to sort output combos? ", "Invalid input, please type yes or no "):
+    if yes_no_check("\nWould you like to sort output combos? ", "Invalid input, please type yes or no "):
         sort_strings = input(f"Please select sorting criteria from {type_string}, seperated by commas: ") # Read desired user sorts
         
         selected_sorts = [
@@ -116,8 +116,8 @@ def sort_outputs(lst, scrubbers):
                     for skipped_scrubbers in [scrubber for scrubber in scrubbers if getattr(scrubber, sort) == -1]:
                         setattr(skipped_scrubbers, sort, get_valid_input(f"Enter {skipped_scrubbers.scrubber_type} {sort} value: ", True, False))   # Assign new input to previously skipped field
                         option["can_sort"] = True
-            
-            # Sorting logic
+                
+            # Print lists sorted on selected criterias
             if(option is not None and option["can_sort"]):
                 print_output_combo(sorted(lst, key=option["key"]), "", option["heading"])
 
@@ -156,6 +156,50 @@ def remove_lists_with_subsets(lists):
         else:
             removed_with_subsets.append((l1, subset_found))  # Store removed element and its subset
 
+    return result
+
+# Check if any inputs have been skipped and reject those that have 
+
+    
+            
+
+#TO-DO/NOTES
+#add methods for sorting based on price and weight now that we have these vairable, for now if any scrubbers hava skipped
+#weight or price say to the user that, that sorting criteria is not availbale since fields are missing, then just apply those sorting
+#then add those functions to the dictionary where the lambda function normally is and everything should work
+#add option to sort by all criterias by inputting "all" when prompted to select sorting criterias   <-
+#adjust all yes_no_check error strings, maybe just make it a static string    <-
+#add input testing to not allow negative numbers      <-important for app version
+#add filtering to just print out firx x outputs
+#add logic to deal with people typing yes to re entering weight values but not wanting to and deal with all those edge cases
+#convert to application, lots of things will probably need to be reworked anyways, could start new repo if i want, just leave program in 
+#usable command line state then move on dont need perfection
+
+#print amount, price, weight next to combo in output just for users clarity and selection
+#with weight or price just return heighest
+#understand subset logic better
+
+
+#TESTING CODE
+#print(combo, totaling_sort(lst[i], "price"), totaling_sort(lst[i], "weight"),) testing weight and price sorting
+
+#def remove_lists_with_subsets(lists):
+    result = []
+    removed_with_subsets = []
+
+    for i, l1 in enumerate(lists):
+        is_super_set = False
+        subset_found = None
+        for j, l2 in enumerate(lists):
+            if i != j and is_subset(l1, l2):  # Checking if l1 has l2 as a subset
+                is_super_set = True
+                subset_found = l2
+                break
+        if not is_super_set:  # If l1 is not a superset of any other list, keep it
+            result.append(l1)
+        else:
+            removed_with_subsets.append((l1, subset_found))  # Store removed element and its subset
+
     # Print the removed elements and their corresponding subsets
     print("\nRemoved Lists and Corresponding Subsets:")
     for removed, subset in removed_with_subsets:
@@ -167,27 +211,6 @@ def remove_lists_with_subsets(lists):
         print(f"{idx}: {filtered}")
     
     return result
-
-# Check if any inputs have been skipped and reject those that have 
-
-    
-            
-
-
-#to-do, add methods for sorting based on price and weight now that we have these vairable, for now if any scrubbers hava skipped
-#weight or price say to the user that, that sorting criteria is not availbale since fields are missing, then just apply those sorting
-#then add those functions to the dictionary where the lambda function normally is and everything should work
-#add option to sort by all criterias by inputting "all" when prompted to select sorting criterias
-#adjust all yes_no_check error strings, maybe just make it a static string
-#add input testing to not allow negative numbers
-#add filtering to just print out firx x outputs
-#add logic to deal with people typing yes to re entering weight values but not wanting to and deal with all those edge cases
-#convert to application, lots of things will probably need to be reworked anyways, could start new repo if i want, just leave program in 
-#usable command line state then move on dont need perfection
-
-#print amount, price, weight next to combo in output just for users clarity and selection
-#with weight or price just return heighest
-
     
     
     

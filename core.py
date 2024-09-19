@@ -41,7 +41,6 @@ def find_scrubber_combos(scrubbers, cfm_target):
     
     result = []
     backtrack(0, [], 0)
-    print("this is the result", result)
     return result
 
 # Return a list of all combinations that meet purity requirements(contains duplicates)
@@ -51,9 +50,7 @@ def add_overflow_all(scrubber_combos, scrubbers, cfm_target):
     for combo in scrubber_combos:
         for scrubber in scrubbers:
             # Add overflow scrubber only if the combo is one scrubber away from exceeding or meeting the cfm target
-            if (sum_combos_cfm_values(combo) + scrubber.cfm_value >= cfm_target and
-                scrubber.cfm_value != cfm_target and
-                sum_combos_cfm_values(combo) != cfm_target):
+            if (sum_combos_cfm_values(combo) + scrubber.cfm_value >= cfm_target):
                 overflowed_combo = combo + [scrubber]
                 all_combos.append(overflowed_combo)
     return all_combos
@@ -121,46 +118,26 @@ def count_types(lst):
     return final_list
 
 # Call all functions required to generate combination lists
-def prepare_output(original_combos, all_combos, cfm_target, scrubbers):
+def prepare_output(original_combos, all_combos, no_subset_combos, cfm_target, scrubbers):
     # Clear existing lists to ensure they start empty
     original_combos.clear()
     all_combos.clear()
 
-    # Extend to change original array instead of just changing it locally
-    original_combos.extend(find_scrubber_combos(scrubbers, cfm_target)) # Find all combination with cfm total less than target cfm
+    # Extend to add all elements to the end of the lists globally
+    original_combos.extend(find_scrubber_combos(scrubbers, cfm_target)) # Find all combination with cfm total less than or equal to target cfm
     all_combos.extend(add_overflow_all(original_combos, scrubbers, cfm_target))  # Generate array containing every combination (contains duplicates)
-
-
-    print("\nadded overflows")
-    for combo in remove_duplicates(add_overflow_all(original_combos, scrubbers, cfm_target)):
-        print(combo)
-
-    
-    print("\n---------------------------------------\n")
-    
-
-    remove_lists_with_subsets(remove_duplicates(all_combos)) #still in testing state, logic seems to be working
-        
+    no_subset_combos.extend(remove_lists_with_subsets(remove_duplicates(all_combos))) # List that contains all combos with subsets removed(used in final output)
     
     
-
-    # Testing
-    print("\nless than cfm combos")
-    for combo in remove_duplicates(original_combos):
-        print(combo)
-    
-
 # Display all combinations and calculations
-def display_output(all_combos, air_changes, cfm_target, scrubbers):
-    print("\n -----FINAL OUTPUT-----")
-    print("\n" + f"To maintain {air_changes} air changes an hour, a total cfm of {cfm_target:.5}({cfm_target*0.000471947:.3}m³/s) is required" + "\n")
+def display_output(no_subset_combos, air_changes, cfm_target, scrubbers):
     
-    all_combos = remove_duplicates(all_combos)
-    print_output_combo(all_combos, "There are no combinations that meet your air purity requirements", "ALL COMBINATIONS") # Print every combo
+    print("\n" + f"To maintain {air_changes} air changes an hour, a total cfm of {cfm_target:.5}({cfm_target*0.000471947:.3}m³/s) is required" + "")
     
-    valid_combos = remove_invalid_combos(all_combos, scrubbers)
-    print_output_combo(valid_combos, "There are no combinations that meet your current stock", "ALL VALID COMBINATIONS") # Print all valid combos
-    sort_outputs(valid_combos, scrubbers)
+    print_output_combo(no_subset_combos, "There are no combinations that meet your air purity requirements", "ALL COMBINATIONS WITHOUT SUBSETS") # Print every combo with subsets removed
+    
+    print_output_combo(remove_invalid_combos(no_subset_combos, scrubbers), "There are no combinations that meet your current stock", "ALL VALID COMBINATIONS") # Print all combos that meet users stock
+    sort_outputs(remove_invalid_combos(no_subset_combos, scrubbers), scrubbers)
     
 #with count types instead of passing in list of list could pass in each combo list seperately and count type on that
 #so we get 
@@ -171,3 +148,4 @@ def display_output(all_combos, air_changes, cfm_target, scrubbers):
 
 #further analyse overflow adding, seems to be working fine but need to make sure since its crucial to the operation
 #also make sure the intital <= cfm target functionality is correct(find_scrubber_combo)
+#maybe could optimise remove_invalid_combos with the use of Counters
